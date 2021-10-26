@@ -1,0 +1,71 @@
+<section data-ng-controller="InspectorPdfController" data-ng-init="initialize()">
+	<ol class="breadcrumb no-print">
+		<li><a href="/#!/reports">Reports</a></li>
+		<li class="active">{{breadcrumbLabel}}</li>
+		<a href="#" style="float: right;" onclick="window.print();" class="download_link">Download</a>
+	</ol>
+	<div class="row">
+		<div class="col-md-12">
+			<h3>Regulatory Report - By Inspector</h3>
+			<br>
+			<p>Report Created {{currentDate}}</p>
+		</div>
+		<div class="col-md-12">
+			<ul class="list-unstyled">
+				<li>{{checklist.name}} </li>
+				<li>{{checklist.site.name}}</li>
+				<li>Required Frequency: {{checklist.frequency.name}}</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-sm-12" ng-repeat="inspectionGroup in inspectionGroups" ng-init="inspectGroupIdx = $index">
+			<div class="col-sm-12" ng-repeat="inspection in inspectionGroup" ng-init="inspectIndex = $index">
+				<hr class="thick">
+				<h4>{{inspectionGroup[0].editor.displayName}}</h4>
+				<ul class="list-unstyled">
+					<li>Inspection Date: {{moment(inspection.date).format('MM/DD/YYYY')}}</li>
+					<li>Submitted:  {{moment(inspection.created).tz('America/New_York').format('MM/DD/YYYY HH:mm z')}}</li>
+					<li>Inspector: {{inspection.editor.displayName}}</li>
+				</ul>
+				<div ng-repeat="answer in inspection.answers track by $index" ng-init="answerIndex = $index">
+					<hr>
+					<p style="float: left;">{{answerIndex+1}}. {{answer.question.text}} {{getRegulatoryFrameworkString(answer.question.regulatory_framework)}}</p>
+					<div style="float: right;">
+						<div ng-if="answer.question.questionType=='Yes/No'">
+							<span ng-if="answer.data.data.main_switchStatus == 'yes'">Yes</span>
+							<span ng-if="answer.data.data.main_switchStatus == 'no'">No</span>
+						</div>
+						<div ng-if="answer.question.questionType=='Yes/No/NA'">
+							<span ng-if="answer.data.data.main_switchStatus == 'yes'">Yes</span>
+							<span ng-if="answer.data.data.main_switchStatus == 'no'">No</span>
+							<span ng-if="answer.data.data.main_switchStatus == 'na'">NA</span>
+						</div>
+						<div ng-if="answer.question.questionType=='Numeric'">
+							{{answer.data.data.main_number}}
+						</div>
+						<div ng-if="answer.question.questionType=='Single'">
+							{{answer.data.data.main_single.value}}
+						</div>
+						<div ng-if="answer.question.questionType=='Date'">
+							{{moment(answer.data.data.main_date).format('MM/DD/YYYY')}}
+						</div>
+						<div ng-if="answer.question.questionType=='Text'">
+							{{answer.data.data.main_text}}
+						</div>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div style="margin-top: 30px"></div>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="footer-logo">
+			</div>
+		</div>
+	</div>
+	<br />
+</section>

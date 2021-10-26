@@ -1,0 +1,41 @@
+<section data-ng-controller="FrequenciesController" data-ng-init="find()">
+	<div class="form-group">
+        <h3>Manage Required Frequencies</h3><br>
+        <p>
+            These are all the options that will appear in the "Required Frequency" dropdown that appears when adding or editing checklist forms.
+        </p>
+        <br />
+        <p>
+            Click on a Frequqncy ID to view/edit the details of that entry. Click on any column header to sort by that column.
+        </p>
+    </div>
+    <div class="form-group">
+        <button type="button" class="btn btn-success" ng-click="create()">Add Required Frequency</button>
+		<div class="pull-right">
+			<input type="checkbox" ng-model="isHideInactivate"> Hide Inactive Frequencies
+		</div>
+    </div>
+    <div class="section-content">
+        <div class="table-responsive">
+            <table class="table" ng-if="authentication.user" st-table="frequencies" st-safe-src="safeFrequencies">
+                <thead>
+                <tr>
+					<th st-sort="name" ng-click="persistSort('name')" st-sort-default="sortColumn.name">Frequency</th>
+                    <th st-sort="company.name" ng-click="persistSort('company')" st-sort-default="sortColumn.company">Company</th>
+                    <th st-sort="sortByStatus" ng-click="persistSort('status')" st-sort-default="sortColumn.status">Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="frequency in frequencies | matchInactivateStatus:isHideInactivate">
+					<td><a ng-click="editFrequency(frequency)">{{ frequency.name }}</a></td>
+                    <td>{{frequency.company.name}}</td>
+                    <td>
+                        <span ng-if="frequency.status==true">Active</span>
+                        <span ng-if="frequency.status==false">Inactive</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div> <!-- table-responsive -->
+    </div> <!-- section-content -->
+</section>

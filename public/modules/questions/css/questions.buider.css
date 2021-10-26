@@ -1,0 +1,111 @@
+.admin-container {
+    color: #666666;
+    background-color: #EFEFEF;
+    padding: 10px 20px;
+}
+
+.breadcrumb {
+	background-color: white !important;
+}
+
+.question-text {
+	padding: 10px;	
+}
+
+.question-textarea {
+	width: 100%;
+}
+
+textarea {
+	/*max-width: 55%;*/
+}
+
+.form-section {
+	background-color: white;
+	margin-bottom: 20px;	
+	padding: 20px;
+}
+
+.no-margin {
+	margin-left: 0;
+	margin-right: 0;
+}
+
+input[type="radio"], input[type="checkbox"] {
+	margin-right: 5px;
+}
+
+.select-regulatory {
+	width: 40%;
+	display: inline;
+}
+
+.ml10 {
+	margin-left: 10px !important;
+}
+
+.ml20 {
+	margin-left: 20px !important;
+}
+
+.ml40 {
+	margin-left: 40px !important;
+}
+
+.mt30 {
+	margin-top: 30px !important;
+}
+
+.information {
+	background-color: #F14913;
+	color: white;
+	padding: 5px 10px;
+}
+
+.checklists {
+	margin: 10px 0;
+
+}
+
+table.no-border > tbody > tr > td {
+	border-width: 0px !important;
+	vertical-align: middle !important;
+}
+
+.align-center {
+	text-align: center;
+}
+
+.align-right {
+	vertical-align: middle;
+	text-align: right;
+}
+
+.align-self-right {
+	float: right;
+}
+
+.form-label {
+	display: table;
+}
+
+.vertical-middle {
+	display: table-cell;
+}
+
+.chkbox {
+	margin-top: 10px;
+}
+
+.input-datepicker {
+	display: inline;
+	width: calc(100% - 55px);
+}
+
+.glyphicon-remove-circle {
+	cursor: pointer;
+}
+
+.font-normal {
+	font-weight: normal;
+}

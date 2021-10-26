@@ -1,0 +1,122 @@
+<section data-ng-controller="MgmtReportsBuildController" data-ng-init="initialize()">
+	<ol class="breadcrumb">
+		<li><a href="/#!/reports">Reports</a></li>
+		<li class="active">{{breadcrumbLabel}}</li>
+	</ol>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="page-header">
+				<h2>{{reportName}}</h2>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-sm-6">
+			<div class="form-group" ng-if="isSuperAdmin">
+				<label for="company"><span class="text-danger">*</span> Company {{editor}}
+				</label>
+				<select ng-model='data.company' class="form-control" ng-options="company as company.name for company in companies track by company._id" ng-change="filterByCompany()" ng-enter="generateReport()">
+					<option value="">Select Company</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-6">
+			<div class="form-group">
+				<label for="checklist">
+					<span class="text-danger">*</span>Checklist
+				</label>
+				<select ng-model='data.checklist' class="form-control" ng-options="checklist as checklist.name for checklist in checklists track by checklist._id" ng-change="filterByChecklist()" ng-enter="generateReport()">
+					<option value="">Select Checklist</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="col-sm-6">
+			<br />
+			<p ng-if="data.checklist">{{data.checklist.site.name}} ({{data.checklist.frequency.name}})</p>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-6">
+			<div class="form-group">
+				<label>
+					Inspector
+				</label>
+				<div ng-dropdown-multiselect options="inspectors" class="fluid-width" selected-model="selInspectors" extra-settings="multiselectSettings1" checkboxes="true" events="{ onItemSelect: onInspectorSelected, onItemDeselect: onInspectorSelected }" ng-enter="generateReport()"></div>
+			</div>
+		</div>
+
+		<div class="col-sm-6">
+			<div class="form-group">
+				<label>
+					Regulatory Framework
+				</label>
+				<div ng-dropdown-multiselect options="regulatories" class="fluid-width" selected-model="selRegulatories" extra-settings="multiselectSettings2" checkboxes="true" events="{ onItemSelect: onRegulatorySelected, onItemDeselect: onRegulatorySelected }" ng-enter="generateReport()"></div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="form-group">
+				<label>Inspection Date(s)</label>
+				<div class="form-inline">
+					<div class="form-group">
+						<label for="fromDate" style="margin-right: 0;">Between</label>
+						<!-- <input type="text" class="form-control" id="fromDate" style="width: 80px;"> -->
+						<div class="input-group">
+							<input type="text" class="form-control input-datepicker" datepicker-popup="{{dateInputFormat}}" ng-model="startDate" is-open="datePickerOpened.startDate" datepicker-options="dateOptions" close-text="Close" style="width: 80px;" ng-enter="generateReport()"/>
+							<button type="button" class="btn btn-default" ng-click="openDatePicker($event, 'startDate')">
+								<i class="glyphicon glyphicon-calendar"></i>
+							</button>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="toDate" style="margin-right: 0;">and</label>
+						<!-- <input type="text" class="form-control" id="toDate" style="width: 80px;"> -->
+						<div class="input-group">
+							<input type="text" class="form-control input-datepicker" datepicker-popup="{{dateInputFormat}}" ng-model="endDate" is-open="datePickerOpened.endDate" datepicker-options="dateOptions" close-text="Close" style="width: 80px;" ng-enter="generateReport()"/>
+							<button type="button" class="btn btn-default" ng-click="openDatePicker($event, 'endDate')">
+								<i class="glyphicon glyphicon-calendar"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-6">
+			<div class="form-group">
+				<label>
+					<span class="text-danger">*</span>Group Results By
+				</label>
+				<select class="form-control" ng-model="groupBy" ng-enter="generateReport()">
+					<option value="">Select</option>
+					<option value="date">Inspection Date</option>
+					<option value="inspector">Inspector</option>
+					<!--<option value="regulatory">Regulatory Framework</option>-->
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-12">
+			<div data-ng-show="error" class="text-danger col-sm-12">
+				<strong data-ng-bind="error"></strong>
+			</div>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="text-center">
+				<button type="button" class="btn btn-success" ng-click="generateReport()">Generate Report</button>
+				<button type="button" class="btn btn-primary ml10" ng-click="saveAs()">Save As</button>
+				<button type="button" class="btn btn-link ml10" ng-click="cancel()">Cancel</button>
+			</div>
+		</div>
+	</div>
+</section>

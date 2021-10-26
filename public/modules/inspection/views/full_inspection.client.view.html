@@ -1,0 +1,57 @@
+<section data-ng-controller="FullInspectionController" class="inspection" data-ng-init="initialize()">
+	<a class="back no-print" ng-click="goBack()" style="font-size: 12px;"><i class="glyphicon glyphicon-menu-left"></i> Back</a>
+	<a href="#" style="float: right;" onclick="window.print();" class="download_link no-print">Download</a>
+	<p style="margin-top: 10px;"><strong style="font-size: 18px;">{{fullInspection.checklist}}</strong></p>
+	<p><strong>{{fullInspection.SiteName}}</strong></p>
+	<p><strong>Required Frequency: {{fullInspection.frequency}}</strong></p>
+	<br>
+	Inspection Date: {{fullInspection.inspectionDate}} <br>
+	Submitted: {{fullInspection.submissionDate}}<br>
+	Inspector: {{fullInspection.inspectorName}}<br>
+	<br>
+	<hr>
+	<div ng-repeat="item in fullInspection.questions">
+		<span ng-if="item.regularity.length > 0">{{item.question_index + 1}}. {{item.question}} ({{item.regularity}})</span>
+		<span ng-if="!item.regularity || item.regularity.length == 0">{{item.question_index + 1}}. {{item.question}} (Non-regulatory)</span>
+		<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{item.answer}}<br>
+		<div ng-if="item.action.length > 0">
+			<div ng-if="item.action != 'Take no action'">
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Conditional Action: <span style="color: #FF0000;">{{item.action}}</span><br>
+			</div>
+			<div ng-if="item.action == 'Display custom text'">
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Custom Text: {{item.customText}}<br>
+			</div>
+		</div>
+		<div ng-if="item.subQuestionText.length > 0">
+			<BLOCKQUOTE>
+				{{item.subQuestionText}}<br>
+				{{item.subAnswer}}<br>
+				<div ng-if="item.subAction.length > 0">
+					<div ng-if="item.subAction != 'Take no action'">
+						Conditional Action:	<span style="color: #FF0000;">{{item.subAction}}</span><br>
+					</div>
+					<div ng-if="item.subAction == 'Display custom text'">
+						Custom Text: {{item.subCustomText}}<br>
+					</div>
+				</div>
+			</BLOCKQUOTE>
+		</div>
+		<div ng-if="item.isComment">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Comment: {{item.comment}}<br>
+		</div>
+		<div ng-if="item.isPhoto">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Image: <br>
+			<div ng-repeat="photo in item.pictureUrl">
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{photo.url}}" target="_blank"><img src="{{photo.url}}" width="150" /></a><br>
+			</div>
+		</div>
+		<div ng-if="item.isGeoTag">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Geo-tag: <br>
+			<div ng-repeat="geo_info in item.geo_info track by $index">
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{geo_info}}<br>
+			</div>
+		</div>
+		<hr>
+	</div>
+</section>

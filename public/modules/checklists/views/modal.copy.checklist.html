@@ -1,0 +1,20 @@
+<div class="modal-confirm">
+    <div class="modal-header">
+        <h3 class="modal-title">Confirmation</h3>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            Are you sure you want to make a copy of the following checklist(s)?
+        </div>
+        <div class="form-group">
+            Copies will be named "Copy of [Checklist Name]" and added to the list of Checklists. You can rename each copy as needed.
+        </div>
+        <div class="form-group" ng-repeat="checklist in checklists">
+            {{checklist.name}}
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-success" ng-click="ok()">YES. COPY.</button>
+        <button class="btn btn-danger" ng-click="cancel()">NO. CANCEL.</button>
+    </div>
+</div>

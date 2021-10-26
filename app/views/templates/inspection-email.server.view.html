@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+</head>
+<body style="font-family: Calibri, sans-serif;">
+	<p>An inspector who reports to you has submitted an inspection checklist. </p>
+	<strong style="font-size: 18px;">{{checklist}}</strong><br>
+	<strong>{{SiteName}}</strong><br>
+	<strong>Required Frequency: {{frequency}}</strong><br>
+	<br>
+	Inspection Date: {{inspectionDate}} <br>
+	Submitted: {{submissionDate}}<br>
+	Inspector: {{inspectorName}}<br>
+	<br>
+	You can see the <a href="{{url}}" target="_blank">full inspection checklist here</a><br>
+	<br>
+	Below are the responses from this inspection that were flagged for Supervisor notification:<br>
+	<hr>
+	{% for item in questions %}
+		{% if item.regularity.length %}
+			{{item.question_index + 1}}. {{item.question}} ({{item.regularity}})<br>
+		{% else %}
+			{{item.question_index + 1}}. {{item.question}} (Non-regulatory)<br>
+		{% endif %}
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{item.answer}}<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Conditional Action: <span style="color: #FF0000;">{{item.action}}</span><br>
+		{% if item.subQuestionText.length %}
+			<BLOCKQUOTE>
+				{{item.subQuestionText}}<br>
+				{{item.subAnswer}}<br>
+				Conditional Action: <span style="color: #FF0000;">{{item.subAction}}</span><br>
+				{% if item.subAction == 'Display custom text' %}
+					Custom Text: {{item.subCustomText}}<br>
+				{% endif %}
+			</BLOCKQUOTE>
+		{% endif %}
+		{% if item.isComment %}
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Comment: {{item.comment}}<br>
+		{% endif %}
+		{% if item.isPhoto %}
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Image:<br>
+			{% for photo in item.pictureUrl %}
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{photo.url}}" target="_blank">{{photo.name}}</a> <br>
+			{% endfor %}
+		{% endif %}
+		{% if item.isGeoTag %}
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Geo-tag: <br>
+			{% for geo_info in item.geo_info %}
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{geo_info}}<br>
+			{% endfor %}
+		{% endif %}
+		<hr>
+	{% endfor %}
+</body>
+</html>

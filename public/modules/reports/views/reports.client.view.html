@@ -1,0 +1,103 @@
+<section data-ng-controller="ReportsController" class="reports" ng-init="initialize()">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="page-header">
+                <h2>Reports</h2>
+            </div>
+
+            <ul class="nav nav-tabs underline">
+                <li ng-class="{active: activeTab == 'basic' }">
+                    <a ng-click="activeTab ='basic'">New Reports</a>
+                </li>
+                <li ng-class="{active: activeTab == 'saved' }">
+                    <a ng-click="activeTab ='saved'">My Saved Reports</a>
+                </li>
+            </ul>
+            <hr />
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div ng-switch='activeTab'>
+                    <div ng-switch-when='basic'>
+                        <a href="/#!/reports/new_management_inspection" class="txt-lg">Management Inspection Data Report</a>
+                        <ul>
+                            <li>Shows full inspection details, including resulting workflow actions.</li>
+                        </ul>
+                        <a href="/#!/reports/new_regulatory_inspection" class="txt-lg">Regulatory Inspection Data Report</a>
+                        <ul>
+                            <li>Shows only the basic information required for regulatory compliance reporting.</li>
+							<li>Does not include workflow actions.</li>
+                        </ul>
+						<a href="/#!/reports/inspection_timeline" class="txt-lg">Inspection Timeline</a>
+						<ul>
+							<li>See all inspections scheduled for your facility for the next year.</li>
+							<li>Zoom in or out and drag left or right on the timeline to see more or less time.</li>
+						</ul>
+                    </div>
+                    <div ng-switch-when='saved'>
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 col-lg-12">
+                                    <button type="button" class="btn btn-primary" ng-click="copyReports()">Make a Copy</button>
+                                    <button type="button" class="btn btn-danger pull-right" ng-click="deleteReports()">Delete Report</button>
+                                <hr>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                <div class="form-inline sort-form">
+                                    <div class="form-group col-lg-4 col-md-4 col-sm-4 col-xs-12" ng-if="isSuperAdmin">
+                                        <label for="">Company</label>
+                                        <select ng-model='filters.company' class="form-control" ng-options="company as company.name for company in companies track by company._id" ng-change="filterByCompany()">
+                                            <option value="">All</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                                        <label for="">Checklist</label>
+                                        <select ng-model='filters.checklist' class="form-control" ng-options="checklist as checklist.name for checklist in checklists" ng-change="filterReports()">
+                                            <option value="">Select</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                                        <label for="">Type</label>
+                                        <select ng-model='filters.type' class="form-control" ng-options="type as type.text for type in types track by type.value" ng-change="filterReports()">
+                                        <!-- <select ng-model='filters.type' class="form-control" ng-change="filterReports()"> -->
+                                            <option value="">All</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <div class="section-sort">
+                                    <span class="btn btn-xs">Sort</span>
+                                    <div class="btn-group" role="group">
+                                        <a class="btn btn-xs" ng-click="sortBy('updated')" ng-class="{'sort-current': orderCriterion=='updated'}">Last Edit</a>
+                                        <a class="btn btn-xs" ng-click="sortBy('name')" ng-class="{'sort-current': orderCriterion=='name'}">Alphabetical</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+
+                        <div ng-repeat="report in filteredReports | orderBy:orderCriterion:orderReverse track by $index" ng-class="{'row-even': $index%2==0, 'row-odd': $index%2==1}" class="col-sm-12 col-md-12 col-lg-12 col-xs-12 section-reports">
+                            <input class="pull-left" type="checkbox" ng-model="report.isChecked">
+                            <ul class="list-unstyled pull-left col-md-9" style="padding: 0">
+                                <li><a ng-click="openReport(report)"> {{report.name}}</a></li>
+                                <li>{{report.checklist.name}}</li>
+                                <li><p>{{report.description}}</p></li>
+                                <li class="text-danger">
+                                    Company:
+                                    <span>{{report.company.name}}</span>
+                                </li>
+                            </ul>
+                            <ul class="list-unstyled pull-right text-right col-md-2" style="padding: 0">
+                                <li>Last edited: {{generateDate(report.updated)}}</li>
+                                <li ng-if="report.type=='management'">Management Report</li>
+                                <li ng-if="report.type=='regulatory'">Regulatory Report</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

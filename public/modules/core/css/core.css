@@ -1,0 +1,65 @@
+.content {
+	margin-top: 70px;
+	/*font-family: 'Ebrima Bold', 'Ebrima';*/
+}
+.undecorated-link:hover {
+	text-decoration: none;
+}
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+	display: none !important;
+}
+.ng-invalid.ng-dirty {
+	border-color: #FA787E;
+}
+.ng-valid.ng-dirty {
+	border-color: #78FA89;
+}
+.browsehappy.jumbotron.hide,
+body.ng-cloak
+{
+	display: block;
+}
+
+.font-bold {
+	font-weight: bold;
+}
+
+.ft18 {
+	font-size: 18px;
+}
+
+.ft15 {
+	font-size: 15px;
+}
+
+.font-italic {
+	font-style: italic;
+}
+
+.btn-reset {
+	display: inline-block;
+	color: white;
+	background-color: #666;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+ul.non-list-style {
+    list-style: none;
+}

@@ -1,0 +1,123 @@
+<section data-ng-controller="FrequencyCreateController" data-ng-init="initialize()" class="create-frequency">
+	<ol class="breadcrumb">
+		<li><a href="/#!/frequencies">Manage Required Frequencies</a></li>
+		<li class="active">{{breadcrumbLabel}}</li>
+	</ol>
+	<div class="well sm container">
+		<div class="form-group">
+			<em>Last Edited: {{lastUpdated.format('MM/DD/YYYY HH:mm a')}} EST</em>{{editor}}
+		</div>
+		<div class="row">
+			<div class="form-group col-sm-6" ng-if="isSuperAdmin">
+				<label>
+					<span class="text-danger">*</span> Company
+				</label>
+				<select class="form-control" ng-options="company as company.name for company in companies track by company._id" ng-model="data.company" ng-enter="save()">
+					<option value="">Select Company</option>
+				</select>
+			</div>
+			<div class="form-group col-sm-6">
+				<label for="frequencyname">
+					<span class="text-danger">*</span> Frequency
+				</label>
+				<input type="text" class="form-control" ng-model="frequencyName" ng-enter="save()">
+			</div>
+		</div>
+		<div class="row">
+			<div class="form-group col-sm-12">
+			
+				<!-- <input type="text" class="form-control" ng-model="frequencyName"> -->
+				
+				<div class="well well-lg white">
+						<label for="frequencyname">
+					<span class="text-danger">*</span> Required Frequency
+				</label>
+					<div class="row">
+					<div class="col-sm-3">
+						<ul class="non-list-style">
+							<li ng-repeat="repeat in repeats">
+								<label><input type="radio" name="optInterval" value="{{repeat.name}}" ng-model="$parent.data.selectedRepeatName" ng-click="updateSelectedRepeat()" ng-enter="save()">{{repeat.name}}</label>
+							</li>
+						</ul>
+					</div>
+					<div class="col-sm-9">
+						<div ng-show="data.selectedRepeatName">
+							<span>Every {{ selectedRepeat.every }}</span>
+							<!-- <div ng-repeat="range in selectedRepeat.rangeArray">
+									<input type="radio" name="optPeriod" value="between" ng-model="data.period" />
+									Between {{ selectedRepeat.rangeLabel }}
+									<select ng-if="selectedRepeat.rangeType === 'month and day'" ng-model="data.between.rangeFrom2">
+										<option ng-repeat="str in selectedRepeat.rangeFrom2" value={{str}}>{{str}}</option>
+									</select>
+									<select ng-model="data.between.rangeFrom">
+										<option ng-repeat="str in selectedRepeat.rangeFrom" value={{str}}>{{str}}</option>
+									</select> and
+									<select ng-if="selectedRepeat.rangeType === 'month and day'" ng-model="data.between.rangeTo2">
+										<option ng-repeat="str in selectedRepeat.rangeTo2" value={{str}}>{{str}}</option>
+									</select>
+									<select ng-model="data.between.rangeTo">
+										<option ng-repeat="str in selectedRepeat.rangeTo" value={{str}}>{{str}}</option>
+									</select>
+							</div> -->
+							<div class="form-inline">
+							<div ng-show="selectedRepeat.dueBy">
+								 <div class="form-group">
+								 	<div class="radio" style="padding-left: 0;">
+								<input type="radio" name="optPeriod" value="due" ng-model="data.period" />
+								{{ selectedRepeat.dueLabel }}
+								<select class="form-control" ng-if="selectedRepeat.dueBy === 'week of month and day of week'" ng-model="data.due.dueWeek" ng-disabled="data.period!='due'" ng-enter="save()">
+									<option ng-repeat="str in selectedRepeat.dueWeek track by $index" value={{$index}} ng-selected="data.due.dueWeek==$index">{{str}}</option>
+								</select>
+								<select class="form-control" ng-if="selectedRepeat.dueBy === 'day of year'" ng-model="data.due.dueWeek" ng-disabled="data.period!='due'" ng-enter="save()">
+									<option ng-repeat="str in selectedRepeat.dueMonth track by $index" value={{$index}} ng-selected="data.due.dueWeek==$index">{{str}}</option>
+								</select>
+								<select class="form-control" ng-model="data.due.value" ng-disabled="data.period!='due'" ng-enter="save()">
+									<option ng-repeat="str in selectedRepeat.due track by $index" value={{$index}} ng-selected="data.due.value==$index">{{str}}</option>
+								</select>
+								</div>
+							</div>
+							</div>
+							 <div class="form-group">
+							<div ng-show="selectedRepeat.incrementDays > 0">
+								<div class="radio" style="padding-left: 0;">
+								<input type="radio" name="optPeriod" value="interval" ng-model="data.period" ng-enter="save()"/>
+								Last Inspection Date + {{ selectedRepeat.incrementDays }} Days 
+								</div>
+							</div>
+							</div>
+							</div>
+						</div>
+					</div>
+					</div>
+				
+				</div>
+			</div>
+		</div>
+		<label for="status">
+			<span class="text-danger">*</span> Status
+		</label>
+		<div class="form-group">
+			<label class="radio-inline">
+				<input type="radio" class="radio-inline" name="optStatus" value="true" ng-model="status" ng-enter="save()">Active
+			</label>
+			<label class="radio-inline">
+				<input type="radio" class="radio-inline" name="optStatus" value="false" ng-model="status" ng-enter="save()">Inactive
+			</label>
+			<label><em>	Only active frequencies will appear in the dropdown for each checklist form.</em></label>
+		</div>
+		<div class="row">
+			<div data-ng-show="error" class="text-danger col-sm-12">
+				<strong data-ng-bind="error"></strong>
+			</div>
+		</div>
+		<br />
+		<div class="row">
+			<div class="form-group col-sm-12">
+				<button type="button" class="btn btn-success" ng-click="save()">Save</button>
+				<button type="button" class="btn btn-link ml10" ng-click="cancel()">Cancel</button>
+				<button type="button" style="display: none;" class="btn btn-link ml10" ng-click="removeRepeats()">Remove All</button>
+			</div>
+		</div>
+	</div>
+	<!-- container -->
+</section>

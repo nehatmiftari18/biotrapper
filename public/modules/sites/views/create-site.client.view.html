@@ -1,0 +1,57 @@
+<section data-ng-controller="SiteCreateController" data-ng-init="initialize()">
+	<ol class="breadcrumb">
+		<li><a href="/#!/sites">Manage Sites</a></li>
+		<li class="active">{{breadcrumbLabel}}</li>
+	</ol>
+	<div class="well sm container">
+		<div class="form-group">
+			<em>Last Edited: {{lastUpdated.format('MM/DD/YYYY HH:mm a')}} EST</em>{{editor}}
+		</div>
+		<div class="row">
+			<div class="form-group col-sm-6" ng-if="isSuperAdmin">
+				<label for="company">
+					<span style="color: red">*</span> Company
+				</label>
+				<select class="form-control" ng-options="company as company.name for company in companies track by company._id" ng-model="data.company" ng-change="selectCompany()" ng-enter="save()">
+					<option value="">Select Company</option>
+				</select>
+			</div>
+			<div class="form-group col-sm-6">
+				<label for="sitename">
+					<span class="text-danger">*</span> Site Name
+				</label>
+				<input type="text" class="form-control" ng-model="siteName" ng-enter="save()">
+			</div>
+		</div>
+
+		<label for="status">
+			<span class="text-danger">*</span> Status
+		</label>
+		<div class="form-group">
+			<label class="radio-inline">
+				<input type="radio" name="optStatus" value="true" ng-model="status" ng-enter="save()">Active
+			</label>
+			<label class="radio-inline">
+				<input type="radio" name="optStatus" value="false" ng-model="status" ng-enter="save()">Inactive
+			</label>
+			<label>
+				<em>Only active sites will appear in the dropdown for each checklist form.</em>
+			</label>
+		</div>
+		<div class="row">
+			<div data-ng-show="error" class="text-danger col-sm-12">
+				<strong data-ng-bind="error"></strong>
+			</div>
+		</div>
+		<br />
+		<div class="row">
+			<div class="form-group col-sm-12">
+				<button type="button" class="btn btn-success" ng-click="save()">Save</button>
+				<button type="button" class="btn btn-link ml10" ng-click="cancel()">Cancel</button>
+			</div>
+		</div>
+	</div>
+	</div>
+	</div>
+	<!-- container -->
+</section>

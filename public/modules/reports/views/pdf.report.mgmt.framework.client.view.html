@@ -1,0 +1,192 @@
+<section data-ng-controller="FrameworkPdfController" data-ng-init="initialize()">
+	<ol class="breadcrumb">
+		<li><a href="/#!/reports">Reports</a></li>
+		<li class="active">{{breadcrumbLabel}}</li>
+	</ol>
+	<div class="row">
+		<div class="col-md-12">
+			<h3>Management Report - By Regulatory Framework</h3>
+			<p>Report Created {{currentDate}}</p>
+		</div>
+		<div class="col-md-12">
+			<ul class="list-unstyled">
+				<li>{{checklist.company.name}}</li>
+				<li>{{checklist.name}} - {{checklist.site.name}}</li>
+				<li>Required Frequency: {{checklist.frequency.name}}</li>
+				<li>Regulatory Framework:
+					<span ng-repeat="framework in frameworks track by $index">
+						&nbsp;{{framework.name}},
+					</span>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<br />
+	<div class="row">
+		<div class="col-sm-12" ng-repeat="questionGroup in questionGroups track by $index">
+			<h4 ng-if="questionGroup[0].question.regulatory">{{getRegulatoryFrameworkString(questionGroup[0].question.regulatory_framework)}}</h4>
+			<h4 ng-if="!questionGroup[0].question.regulatory">Non-regulatory</h4>
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Question</th>
+						<th>Answer</th>
+						<!--<th>Conditional Action</th>-->
+						<th>Detail</th>
+						<th>Sub-question Answer</th>
+						<th>Detail</th>
+						<th>Image</th>
+						<th>Geo-tag</th>
+						<th>Comment</th>
+					</tr>
+				</thead>
+				<tbody ng-repeat="question in questionGroup track by $index">
+					<tr>
+						<td colspan="8"><b>{{question.question.text}}</b></td>
+					</tr>
+					<tr ng-repeat="inspection in inspections track by $index" ng-init="inspectIndex = $index">
+						<td>{{inspection.editor.displayName}}
+							<ul class="list-unstyled">
+								<li><i>Inspection Date: {{moment(inspection.date).format('MM/DD/YYYY')}}</i></li>
+								<li><i>Data Submitted: {{moment(inspection.created).format('MM/DD/YYYY HH:mm a')}}</i></li>
+							</ul>
+						</td>
+						<td>	<!-- Answer -->
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].question.questionType=='Yes/No'">
+								<span ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.data.main_switchStatus=='yes'">Yes</span>
+								<span ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.data.main_switchStatus=='no'">No</span>
+							</div>
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].question.questionType=='Yes/No/NA'">
+								<span ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.data.main_switchStatus=='yes'">Yes</span>
+								<span ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.data.main_switchStatus=='no'">No</span>
+								<span ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.data.main_switchStatus=='na'">NA</span>
+							</div>
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].question.questionType=='Numeric'">
+								{{inspection.orderedAnswers[$parent.$parent.$index].data.data.main_number}}
+							</div>
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].question.questionType=='Single'">
+								{{inspection.orderedAnswers[$parent.$parent.$index].data.data.main_single.value}}
+							</div>
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].question.questionType=='Date'">
+								{{moment(inspection.orderedAnswers[$parent.$parent.$index].data.data.main_date).format('MM/DD/YYYY')}}
+							</div>
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].question.questionType=='Text'">
+								{{inspection.orderedAnswers[$parent.$parent.$index].data.data.main_text}}
+							</div>
+						</td>
+						<!--<td>	&lt;!&ndash; Conditional Action &ndash;&gt;
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.action.action=='action_email'">
+								<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Email Supervisor
+							</div>
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.action.action=='action_sub'">
+								<span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span> Go to sub-question
+							</div>
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.action.action=='action_custom'">
+								<span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span> Display custom text
+							</div>
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.action.action=='action_no'">
+								Take no action
+							</div>
+						</td>-->
+						<td>	<!-- Detail -->
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.action.action == 'action_email'">
+								Email supervisor <br>
+								To: {{inspection.editor.supervisor.email}} <br>
+								{{moment().format('MM/DD/YYYY HH:mm')}}
+							</div>
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.action.action == 'action_sub'">
+								{{inspection.orderedAnswers[$parent.$parent.$index].question.subQuestions[0].text}}
+							</div>
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.action.action == 'action_custom'">
+								{{inspection.orderedAnswers[$parent.$parent.$index].data.action.customText}}
+							</div>
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.action.action == 'action_no'">
+								Take no action
+							</div>
+						</td>
+						<td>	<!-- Sub-question Answer -->
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.action.action == 'action_sub'">
+								<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].question.subQuestions[0].type == 'Yes/No'">
+									<span ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.data.sub_switchStatus=='yes'">Yes</span>
+									<span ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.data.sub_switchStatus=='no'">No</span>
+								</div>
+								<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].question.subQuestions[0].type == 'Yes/No/NA'">
+									<span ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.data.sub_switchStatus=='yes'">Yes</span>
+									<span ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.data.sub_switchStatus=='no'">No</span>
+									<span ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.data.sub_switchStatus=='na'">NA</span>
+								</div>
+								<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].question.subQuestions[0].type == 'Numeric'">
+									{{inspection.orderedAnswers[$parent.$parent.$index].data.data.sub_number}}
+								</div>
+								<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].question.subQuestions[0].type == 'Single'">
+									{{inspection.orderedAnswers[$parent.$parent.$index].data.data.sub_single.value}}
+								</div>
+								<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].question.subQuestions[0].type == 'Date'">
+									{{moment(inspection.orderedAnswers[$parent.$parent.$index].data.data.sub_date).format('MM/DD/YYYY')}}
+								</div>
+								<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].question.subQuestions[0].type == 'Text'">
+									{{inspection.orderedAnswers[$parent.$parent.$index].data.data.sub_text}}
+								</div>
+							</div>
+						</td>
+						<td>	<!-- Sub-question Detail -->
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.action.action == 'action_sub'">
+								<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.subAction.action=='action_email'">
+									Email supervisor <br>
+									To: {{inspection.editor.supervisor.email}} <br>
+									{{moment().format('MM/DD/YYYY HH:mm')}}
+								</div>
+								<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.subAction.action=='action_custom'">
+									{{inspection.orderedAnswers[$parent.$parent.$index].data.subAction.customText}}
+								</div>
+								<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.subAction.action=='action_no'">
+									Take no action
+								</div>
+							</div>
+						</td>
+						<td>
+							<a ng-repeat="picture in inspection.orderedAnswers[$parent.$parent.$index].data.data.pictureURL track by $index" ng-init="picIndex = $index" ng-click="gotoPicture(inspectIndex, $parent.$parent.$index, picIndex)" ng-if="!isString(inspection.orderedAnswers[$parent.$parent.$index].data.data.pictureURL)">
+								{{picture}}
+							</a>
+							<a ng-click="gotoPicture(inspectIndex, $parent.$parent.$index, 0)" ng-if="isString(inspection.orderedAnswers[$parent.$parent.$index].data.data.pictureURL)">
+								{{inspection.orderedAnswers[$parent.$parent.$index].data.data.pictureURL}}
+							</a>
+						</td>
+						<td>
+							{{generateLocationString(inspection.orderedAnswers[$parent.$parent.$index].data.data.position)}}
+						</td>
+						<td>
+							{{inspection.orderedAnswers[$parent.$parent.$index].data.data.comment}}
+						</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td></td>
+						<td></td>
+						<!--<td></td>-->
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+				</tfoot>
+			</table>
+			<br />
+		</div>
+	</div>
+	<div class="row form-group">
+		<div class="col-sm-6 form-group" ng-repeat="picture in pictures">
+			<a>{{picture.url}}</a><br /><br />
+			<img ng-src="pictures/{{picture.url}}" class="pdf_image" id="picture_{{picture.inspection}}_{{picture.answer}}_{{picture.pictureIndex}}" />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="footer-logo">
+			</div>
+		</div>
+	</div>
+	<br />
+</section>

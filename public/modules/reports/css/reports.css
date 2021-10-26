@@ -1,0 +1,53 @@
+h4, h5 {
+    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: bold;
+}
+
+.fluid-width .dropdown-toggle, .fluid-width, .fluid-width .dropdown-multiselect {
+    width: 100% !important;
+    max-width: 100% !important;
+} 
+
+.pdf_image {
+	width: 100%;
+}
+
+h1 .report-run-date {
+	font-size: 20px;
+	font-weight: normal;
+}
+
+.vis-timeline, .vis-item.vis-box {
+	border: none;
+}
+
+.vis-item .vis-item-content {
+	font-size: 11px !important;
+}
+
+.timeline-table .active td {
+	background-color: #FFF785 !important;
+}
+
+.thick {
+	border-top-width: 3px;
+}
+
+blockquote {
+	color: #3c3c3c;
+	font-size: 12px;
+}
+
+@media print
+{
+	.no-print, .no-print *
+	{
+		display: none !important;
+	}
+}
+
+a.download_link {
+	text-decoration: underline;
+	text-transform: none;
+	font-size: 12px;
+}

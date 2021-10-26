@@ -1,0 +1,17 @@
+<div class="modal-confirm">
+    <div class="modal-header">
+        <h3 class="modal-title">Confirmation</h3>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            Are you sure you want to delete the following question(s)?
+        </div>
+        <div class="form-group" ng-repeat="question in questions">
+            {{question.text}}
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger" ng-click="ok()">YES. DELETE.</button>
+        <button class="btn btn-primary" ng-click="cancel()">NO. CANCEL.</button>
+    </div>
+</div>

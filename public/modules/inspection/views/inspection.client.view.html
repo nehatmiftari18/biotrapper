@@ -1,0 +1,22 @@
+<section data-ng-controller="InspectionController" class="inspection" data-ng-init="initialize()">
+	<tabset>
+		<tab ng-repeat="tab in tabs" heading="{{tab.title}}"  active="tab.active" select="getChecklistsByTab($index)">
+			<table class="table" st-table="checklists" st-safe-src="safe_checklists">
+				<thead>
+					<tr>
+						<th st-sort="name">Inspection Checklist</th>
+						<th st-sort="lastInspectionDate" st-sort-default="reverse">Last</th>
+						<th st-sort="dueDate">Next</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="checklist in checklists">
+						<td><a ng-click="inspectChecklist(checklist)">{{checklist.name}}</a></td>
+						<td><a ng-click="fullInspectionsChecklist(checklist)" ng-if="checklist.lastInspectionDate">{{formatInspectionDate(checklist.lastInspectionDate)}}</a></td>
+						<td><span class="label label-default" ng-if="checklist.dueDate">{{checklist.dueDate}}</span></td>
+					</tr>
+				</tbody>
+			</table>
+		</tab>
+	</tabset>
+</section>

@@ -1,0 +1,37 @@
+<section data-ng-controller="CompaniesController" data-ng-init="find()">
+    <div class="form-group">
+        <h3>Manage Companies</h3><br>
+        <p>
+            Click on a Company ID to view/edit the details of that company. Click on any column header to sort by that column.
+        </p>
+    </div>
+    <div class="form-group">
+        <button type="button" class="btn btn-success" ng-click="addNew()">Add Company</button>
+		<div class="pull-right">
+			<input type="checkbox" ng-model="isHideInactivate"> Hide Inactive Companies
+		</div>
+    </div>
+    <div class="section-content">
+        <div class="table-responsive">
+            <table class="table" ng-if="authentication.user" st-table="companies" st-safe-src="safeCompanies">
+                <thead>
+                    <tr>
+                        <th st-sort="name" ng-click="persistSort('name')" st-sort-default="sortColumn.name">Company Name</th>
+                        <th st-sort="sortByStatus" ng-click="persistSort('status')" st-sort-default="sortColumn.status">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="company in companies | matchInactivateStatus:isHideInactivate">
+                        <td><a ng-click="editCompany(company)">{{ company.name }}</a></td>
+                        <td>
+                            <span ng-if="company.status==true">Active</span>
+                            <span ng-if="company.status==false">Inactive</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- table-responsive -->
+    </div>
+    <!-- section-content -->
+</section>

@@ -1,0 +1,51 @@
+<section data-ng-controller="ReportsController" data-ng-init="initialize()">
+	<ol class="breadcrumb">
+		<li><a href="/#!/reports">Reports</a></li>
+		<li class="active">Inspection Timeline</li>
+	</ol>
+	<div class="row">
+		<div class="form-group col-lg-4 col-md-4 col-sm-4 col-xs-12" ng-if="isSuperAdmin">
+			<label for="">Company</label>
+			<select ng-model='timelineFilters.company' class="form-control" ng-options="company as company.name for company in companies track by company._id" ng-change="filterSitesByCompany()">
+				<option value="">Select</option>
+			</select>
+		</div>
+		<div class="form-group col-lg-4 col-md-4 col-sm-4 col-xs-12">
+			<label for="">Site</label>
+			<select ng-model='timelineFilters.site' class="form-control" ng-options="site as site.name for site in sites track by site._id" ng-change="fetchChecklists()">
+				<option value="">Select</option>
+			</select>
+		</div>
+		<div class="form-group col-lg-4 col-md-4 col-sm-4 col-xs-12">
+			<label for="">Frequencies</label>
+			<div ng-dropdown-multiselect options="availableFrequencies" selected-model="timelineFilters.frequencies" extra-settings="multiselectSettings" checkboxes="true"  events="{ onItemSelect: fetchChecklistsByFrequency, onItemDeselect: fetchChecklistsByFrequency, onSelectAll: fetchChecklistsByFrequency, onDeselectAll: fetchChecklistsByFrequency }" translation-texts="textSettings"></div>
+		</div>
+	</div>
+	<div class="row">
+		<vis-timeline data="timeline_data" options="options" events="events"></vis-timeline>
+	</div>
+	<div class="row" style="margin-top: 20px;">
+		<div class="table-responsive">
+			<table class="table timeline-table" st-table="inspection_items" st-safe-src="safe_inspection_items">
+				<thead>
+				<tr>
+					<th st-sort="start" st-sort-default="true">Due Date</th>
+					<th st-sort="site">Site</th>
+					<th st-sort="name">Inspection</th>
+					<th st-sort="frequency">Frequency</th>
+					<th st-sort="editor">Inspector</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr ng-repeat="item in inspection_items | timelineDatRange:startRangeDate:endRangeDate" ng-class="{'active': item.selected}">
+					<td>{{ item.start | date: 'MM/dd/yyyy'}}</a></td>
+					<td>{{item.site}}</td>
+					<td>{{item.name}}</td>
+					<td>{{item.frequency}}</td>
+					<td>{{item.editor}}</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</section>

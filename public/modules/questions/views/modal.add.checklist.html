@@ -1,0 +1,34 @@
+<div class="modal-confirm">
+    <div class="modal-header">
+        <h3 class="modal-title">Confirmation</h3>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            Select the checklist where you want to add the following question(s).
+        </div>
+        <div class="form-group" ng-repeat="question in questions">
+            {{question.text}}
+        </div>
+        <div class="form-inline">
+            <div class="form-group">
+                <label for="checklist">Checklist:</label>
+                <select 
+                    ng-model='checklist' 
+                    class="form-control"
+                    ng-options="cl as cl.name for cl in checklists | orderBy: 'name' track by cl._id"
+                    >
+                    <option value="">Select Checklist</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div data-ng-show="error" class="text-danger col-sm-12">
+            <strong data-ng-bind="error"></strong>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-success" ng-click="ok()">ADD TO CHECKLIST</button>
+        <button class="btn btn-danger" ng-click="cancel()">CANCEL</button>
+    </div>
+</div>

@@ -1,0 +1,167 @@
+<section data-ng-controller="InspectionQuestionController" class="inspection input" data-ng-init="initialize()" flow-init
+		 flow-file-added="!!{png:1,gif:1,jpg:1,jpeg:1}[$file.getExtension()]" flow-files-submitted="$flow.upload()">
+    <a class="back" ng-click="goBack()"><i class="glyphicon glyphicon-menu-left"></i> Back</a>
+    <div id="main-question">
+        <div class="form-group" ng-if="question.questionType=='Yes/No'">
+            <label>{{question.text}}</label>
+			<div class="btn-group">
+				<span class="btn btn-success" ng-model="data.main_switchStatus" btn-radio="''" uncheckable ng-change="toggleMainSwitch()">Select</span>
+				<span class="btn btn-success" ng-model="data.main_switchStatus" btn-radio="'yes'" uncheckable ng-change="toggleMainSwitch()">Yes</span>
+				<span class="btn btn-success" ng-model="data.main_switchStatus" btn-radio="'no'" uncheckable ng-change="toggleMainSwitch()">No</span>
+			</div>
+        </div>
+		<div class="form-group" ng-if="question.questionType=='Yes/No/NA'">
+			<label>{{question.text}}</label>
+			<div class="btn-group">
+				<span class="btn btn-success" ng-model="data.main_switchStatus" btn-radio="''" uncheckable ng-change="toggleMainSwitch()">Select</span>
+				<span class="btn btn-success" ng-model="data.main_switchStatus" btn-radio="'yes'" uncheckable ng-change="toggleMainSwitch()">Yes</span>
+				<span class="btn btn-success" ng-model="data.main_switchStatus" btn-radio="'no'" uncheckable ng-change="toggleMainSwitch()">No</span>
+				<span class="btn btn-success" ng-model="data.main_switchStatus" btn-radio="'na'" uncheckable ng-change="toggleMainSwitch()">N/A</span>
+			</div>
+		</div>
+        <div class="form-group psi" ng-if="question.questionType=='Numeric'">
+            <label>{{question.text}}</label>
+            <div class="input-group" style="width: 120px;" type="text">
+                <input type="text" class="form-control" name="psiReading" ng-model="data.main_number" ng-blur="evaluateNumber()" />
+                <div class="input-group-addon">{{question.numericUnit}}</div>
+            </div>
+        </div>
+        <div class="form-group" ng-if="question.questionType=='Single'">
+            <label>{{question.text}}</label>
+            <select ng-model="data.main_single" class="form-control" ng-options="condition as condition.value for condition in question.conditionalActions" ng-change="single_action_performed()">
+                <option value="">Select</option>
+            </select>
+        </div>
+        <div class="form-group" ng-if="question.questionType=='Date'">
+            <label>{{question.text}}</label>
+            <div class="input-group">
+                <input type="text" class="input-datepicker form-control" datepicker-popup="{{dateInputFormat}}" ng-model="data.main_date" is-open="datePickerOpened.main" datepicker-options="dateOptions" close-text="Close" ng-change="dateChanged()" />
+                <button type="button" class="btn btn-default" ng-click="openDatePicker($event, 'main')">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                </button>
+            </div>
+        </div>
+        <div class="form-group" ng-if="question.questionType=='Text'">
+            <label>{{question.text}}</label>
+            <textarea class="form-control" ng-model="data.main_text"></textarea>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="action-email" ng-if="action.action == 'action_email'">
+            <div class="alert alert-warning" role="alert">
+               <i class="glyphicon glyphicon-envelope"></i> {{actionString}} BioTrapper will notify your supervisor via email.
+            </div>
+        </div>
+        <div class="action-subQuestion" ng-if="action.action == 'action_sub'">
+            <div class="alert alert-warning" role="alert">
+               <i class="glyphicon glyphicon-question-sign"></i> {{actionString}} Please answer the following sub-question.
+            </div>
+            <div class="form-group" ng-if="subQuestion.type=='Yes/No'">
+                <label>{{subQuestion.text}}</label>
+				<div class="btn-group form-group">
+					<span class="btn btn-success" ng-model="data.sub_switchStatus" btn-radio="''" uncheckable ng-change="toggleSubSwitch()">Select</span>
+					<span class="btn btn-success" ng-model="data.sub_switchStatus" btn-radio="'yes'" uncheckable ng-change="toggleSubSwitch()">Yes</span>
+					<span class="btn btn-success" ng-model="data.sub_switchStatus" btn-radio="'no'" uncheckable ng-change="toggleSubSwitch()">No</span>
+				</div>
+            </div>
+			<div class="form-group" ng-if="subQuestion.type=='Yes/No/NA'">
+				<label>{{subQuestion.text}}</label>
+				<div class="btn-group form-group">
+					<span class="btn btn-success" ng-model="data.sub_switchStatus" btn-radio="''" uncheckable ng-change="toggleSubSwitch()">Select</span>
+					<span class="btn btn-success" ng-model="data.sub_switchStatus" btn-radio="'yes'" uncheckable ng-change="toggleSubSwitch()">Yes</span>
+					<span class="btn btn-success" ng-model="data.sub_switchStatus" btn-radio="'no'" uncheckable ng-change="toggleSubSwitch()">No</span>
+					<span class="btn btn-success" ng-model="data.sub_switchStatus" btn-radio="'na'" uncheckable ng-change="toggleSubSwitch()">N/A</span>
+				</div>
+			</div>
+            <div class="form-group psi" ng-if="subQuestion.type=='Numeric'">
+                <label>{{subQuestion.text}}</label>
+                <div class="input-group form-group" style="width: 120px;" type="text">
+                    <input type="text" class="form-control" name="psiReading" ng-model="data.sub_number" ng-blur="evaluateSubNumber()" />
+                    <div class="input-group-addon">psi</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="subQuestion.type=='Single'">
+                <label>{{subQuestion.text}}</label>
+                <select ng-model="data.sub_single" class="form-control form-group" ng-options="condition as condition.value for condition in subQuestion.actions" ng-change="single_subAction_performed()">
+                    <option value="">Select</option>
+                </select>
+            </div>
+            <div class="form-group" ng-if="subQuestion.type=='Date'">
+                <label>{{subQuestion.text}}</label>
+                <div class="input-group form-group">
+                    <input type="text" class="input-datepicker form-control" datepicker-popup="{{dateInputFormat}}" ng-model="data.sub_date" is-open="datePickerOpened.sub" datepicker-options="dateOptions" close-text="Close" ng-change="subDateChanged()" />
+                    <button type="button" class="btn btn-default" ng-click="openDatePicker($event, 'sub')">
+                        <i class="glyphicon glyphicon-calendar"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="form-group" ng-if="subQuestion.type=='Text'">
+                <label>{{subQuestion.text}}</label>
+                <textarea class="form-control form-group" ng-model="data.sub_text"></textarea>
+            </div>
+            <div class="form-group" class="sub-actions">
+                <div class="action-email" ng-if="subAction.action == 'action_email'">
+                    <div class="alert alert-warning" role="alert">
+                       {{subActionString}} BioTrapper will notify your supervisor via email.
+                    </div>
+                </div>
+                <div class="action-custom" ng-if="subAction.action == 'action_custom'">
+                    <div class="alert alert-warning" role="alert">
+                       {{subAction.customText}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="action-custom" ng-if="action.action == 'action_custom'">
+            <div class="alert alert-warning" role="alert">
+               {{action.customText}}
+            </div>
+        </div>
+    </div>
+    <div class="options">
+        <div class="form-group" ng-if="question.isComment">
+            <label>Comment</label>
+            <textarea class="form-control" ng-model="data.comment"></textarea>
+        </div>
+        <div class="form-group" ng-if="question.isPhoto">
+            <div id="upload-file-container">
+				<div>
+					<label><i class="glyphicon glyphicon-camera icon-lg"></i></label>
+					<span flow-btn="" class="add-image-link">Add image</span>
+				</div>
+				<div ng-repeat="picture in picture.content" class="gallery-box">
+					<div class="thumbnail">
+						<a ng-click="openLightboxModal($index)"><img ngf-src = "picture" /></a>
+					</div>
+
+					<div class="btn-group" style="margin: 4px;">
+						<a class="btn btn-xs btn-danger" ng-click="removePicture($index)">
+							Remove
+						</a>
+					</div>
+				</div>
+				<div class="clearfix"></div>
+            </div>
+        </div>
+        <div class="form-group" ng-if="question.isGeoTag">
+            <label><i class="glyphicon glyphicon-map-marker icon-lg"></i></label>
+            <a ng-click="addGeolocation()">Add a geotag of my current location</a>
+            <div ng-if="data.position.length > 0" style="margin-left: 57px;" ng-repeat="position in data.position">
+                <p>Lat: {{position.latitude}}</p>
+                <p>Lon: {{position.longitude}}</p>
+				<p><a class="text-danger" ng-click="removeGeolocation($index)">Remove</a> | <a ng-click="addGeolocation()">Add another</a></p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div data-ng-show="error" class="text-danger col-sm-12">
+                <strong data-ng-bind="error"></strong>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <button type="button" class="btn btn-success btn-block no-radius" ng-click="saveAnswer()">OK</button>
+        <button type="button" class="btn btn-default btn-block no-radius" ng-click="cancelAnswer()">Cancel</button>
+    </div>
+</section>

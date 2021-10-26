@@ -1,0 +1,75 @@
+<section data-ng-controller="BankController" data-ng-init="initScope()">
+     <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12">
+            <div class="page-header">
+                <h2>Questions</h2>
+            </div>
+            <div>
+                <button type="button" class="btn btn-success" ng-click="create()">Create New Question</button>
+                <button type="button" class="btn btn-primary ml10" ng-click="addToChecklist()">Add to Checklist</button>
+                <button type="button" class="btn btn-primary ml10" ng-click="copyQuestions()">Make a Copy</button>
+                <button type="button" class="btn btn-danger pull-right" ng-click="deleteQuestion()">Delete Question</button>
+            </div>
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+            <div class="form-inline sort-form">
+                    <div class="form-group col-lg-4 col-md-4 col-sm-4 col-xs-12" ng-if="isSuperAdmin">
+                        <label for="">Company</label>
+                        <select ng-model='filter.filter_company' class="form-control" ng-options="company as company.name for company in companies track by company._id" ng-change="filterByCompany()">
+                            <option value="">Show All</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                        <label for="">Keyword</label>
+                        <select ng-model='filter.filter_keyword' class="form-control" ng-options="keyword for keyword in keywords" ng-change="filterQuestions()">
+                            <option value="">Show All</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                        <label for="">Regulation</label>
+                        <select ng-model='filter.filter_regulatory' class="form-control" ng-options="regulatory as regulatory.name for regulatory in regulatories track by regulatory._id" ng-change="filterQuestions()">
+                            <option value="">Show All</option>
+                        </select>
+                    </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <div class="section-sort">
+                <span class="btn btn-xs">Sort</span>
+                <div class="btn-group" role="group">
+                    <a class="btn btn-xs" ng-click="sortBy('updated')" ng-class="{'sort-current': orderCriterion=='updated'}">Last Edit</a>
+                    <a class="btn btn-xs" ng-click="sortBy('text')" ng-class="{'sort-current': orderCriterion=='text'}">Alphabetical</a>
+                    <a class="btn btn-xs" ng-click="sortBy('regulatory_framework.name')" ng-class="{'sort-current': orderCriterion=='regulatory_framework.name'}">Regulation</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+       
+    <div ng-repeat="question in filteredQuestions | orderBy:orderCriterion:orderReverse track by $index" ng-class="{'row-even': $index%2==0, 'row-odd': $index%2==1}" class="col-sm-12 col-md-12 col-lg-12 col-xs-12 section-questions">
+       
+        <ul class="list-unstyled pull-left col-md-8" style="padding: 0; max-width: 70%;">
+            <li><input type="checkbox" ng-model="question.isChecked"><a ng-click="openQuestion(question)"> {{question.text}}</a></li>
+            <li style="margin-left: 30px;">keywords: {{question.keywords.join()}}</li>
+            <li style="margin-left: 30px;">
+                Used in Checklists:
+                <a ng-repeat="checklist in question.checklists | unique: '_id'" ng-click="openChecklist(checklist)">
+                {{checklist.name}}
+            </a>
+            </li>
+            <li style="margin-left: 30px;">
+                Company:
+                <span>{{question.company.name}}</span>
+            </li>
+        </ul>
+        <ul class="list-unstyled pull-right text-right col-md-3" style="padding: 0; max-width: 30%;">
+            <li><b>{{typeString[question.questionType]}}</b></li>
+            <li>Last edited: {{generateDate(question.updated)}} EST</li>
+            <li><span ng-if="question.regulatory">{{question.regulatory_framework.name}}</span><span ng-if="!question.regulatory">Non-regulatory</span></li>
+        </ul>
+    </div>
+</section>

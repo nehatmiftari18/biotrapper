@@ -1,0 +1,38 @@
+<section data-ng-controller="InspectionChecklistController" class="inspection questions" data-ng-init="initialize()">
+	<a class="back" ng-click="goBack()"><i class="glyphicon glyphicon-menu-left"></i> Back to My Inspections</a>
+    <ul class="list-unstyled">
+        <li style="font-size: 17px;">{{checklist.name}} : {{checklist.site.name}}</li>
+        <li>
+            <div class="form-inline">
+                <div class="form-group">
+                    <label>Inspection Date</label>
+                    <div class="input-group">
+                        <input type="text" class="input-datepicker" datepicker-popup="{{dateInputFormat}}" ng-model="inspectionDate" is-open="datePickerOpened" datepicker-options="dateOptions" close-text="Close" max-date="{{now}}" disabled/>
+                        <button type="button" class="btn btn-default" ng-click="openDatePicker($event)">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </div>
+                    <span class="help-block"><em>If you will be submitting your inspection data at a later date, please ensure this field reflects the date the inspection was actually performed on site.</em></span>
+                </div>
+            </div>
+        </li>
+    </ul>
+    <div class="list-group">
+        <button ng-repeat="question in checklist.questions track by $index" type="button" class="list-group-item" ng-click="viewQuestionDetails($index)" ng-attr-id="id-{{$index}}" anchor-scroll-to-id>
+            <span ng-if="question.mandatory" class="text-danger">* </span>
+            <span ng-if="!question.mandatory" class="text-danger">&nbsp;&nbsp;</span>
+            {{question.question.text}}
+            <i class="glyphicon glyphicon-ok pull-right color-green" ng-if="answered_questions.indexOf(question.question._id)>-1"></i>
+        </button>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div data-ng-show="error" class="text-danger col-sm-12">
+                <strong data-ng-bind="error"></strong>
+            </div>
+        </div>
+    </div>
+    <button id="test" type="button" class="btn btn-success btn-block no-radius" ng-click="submitInspection()">Submit Checklist</button>
+    <button type="button" class="btn btn-info btn-block no-radius" ng-click="saveInspection()">Save for Later</button>
+    <button type="button" class="btn btn-warning btn-block no-radius" ng-click="discard()">Cancel</button>
+</section>

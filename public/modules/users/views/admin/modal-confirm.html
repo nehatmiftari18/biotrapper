@@ -1,0 +1,24 @@
+<div class="modal-confirm">
+    <div class="modal-header">
+        <h3 class="modal-title">Confirmation</h3>
+    </div>
+    <div class="modal-body">
+		<div class="form-group" ng-if="!makeActivate">
+			Are you sure you want to deactivate the following users?
+			Their status will be updated to "Inactive" and they will no longer be able to access the BioTrapper application.
+			But they will still be listed in the Users table as Inactive users.
+		</div>
+		<div class="form-group" ng-if="makeActivate">
+			Are you sure you want to activate the following users?
+			Their status will be updated to "Active" and they will be eligible to login to the BioTrapper application.
+		</div>
+		<div class="form-group" ng-repeat="item in selectedUsers">
+			{{item.displayName}}
+		</div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger" ng-click="ok()" ng-if="!makeActivate">Yes. Deactivate.</button>
+		<button class="btn btn-danger" ng-click="ok()" ng-if="makeActivate">Yes. Activate.</button>
+        <button class="btn btn-primary" ng-click="cancel()">No. Cancel.</button>
+    </div>
+</div>

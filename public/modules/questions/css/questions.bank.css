@@ -1,0 +1,56 @@
+.row-container {
+	display: table;
+}
+
+.middle-align {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.inline-select, .inline-control {
+	display: inline;
+	width: 15%;
+}
+
+.mr10 {
+	margin-right: 10px;
+}
+
+.section-sort {
+	margin: 0 10px;
+	float: right;
+}
+
+.sort-current {
+	font-weight: bold;
+}
+
+a {
+	cursor: pointer;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+.row-odd {
+	padding: 10px 20px;
+}
+
+.row-even {
+	padding: 10px 20px;
+	background-color: #eee;
+}
+
+.color-red {
+	color: #FF0000;
+}
+
+.color-blue {
+	color: #4A85BB;
+}
+
+.font16 {
+	font-size: 16px;
+}

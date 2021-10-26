@@ -1,0 +1,134 @@
+<section data-ng-controller="DatePdfController" data-ng-init="initialize()" id="pdf-container">
+	<ol class="breadcrumb no-print">
+		<li><a href="/#!/reports">Reports</a></li>
+		<li class="active">{{breadcrumbLabel}}</li>
+		<a href="#" style="float: right;" onclick="window.print();" class="download_link">Download</a>
+	</ol>
+	<div class="row">
+		<div class="col-md-12">
+			<h3>Management Report - By Date</h3>
+			<br>
+			<p>Report Created {{currentDate}}</p>
+		</div>
+		<div class="col-md-12">
+			<ul class="list-unstyled">
+				<li>{{checklist.name}} </li>
+				<li>{{checklist.site.name}}</li>
+				<li>Required Frequency: {{checklist.frequency.name}}</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-sm-12" ng-repeat="inspection in inspections track by $index" ng-init="inspectIndex = $index">
+			<hr class="thick">
+			<h4>{{moment(inspection.date).format('MM/DD/YYYY')}}</h4>
+			<ul class="list-unstyled">
+				<li>Inspection Date: {{moment(inspection.date).format('MM/DD/YYYY')}}</li>
+				<li>Submitted:  {{moment(inspection.created).tz('America/New_York').format('MM/DD/YYYY HH:mm z')}}</li>
+				<li>Inspector: {{inspection.editor.displayName}}</li>
+			</ul>
+			<div ng-repeat="answer in inspection.answers track by $index" ng-init="answerIndex = $index">
+				<hr>
+				<p>{{answerIndex+1}}. {{answer.question.text}} {{getRegulatoryFrameworkString(answer.question.regulatory_framework)}}</p>
+				<div ng-if="answer.question.questionType=='Yes/No'">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span ng-if="answer.data.data.main_switchStatus == 'yes'">Yes</span>
+					<span ng-if="answer.data.data.main_switchStatus == 'no'">No</span>
+				</div>
+				<div ng-if="answer.question.questionType=='Yes/No/NA'">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span ng-if="answer.data.data.main_switchStatus == 'yes'">Yes</span>
+					<span ng-if="answer.data.data.main_switchStatus == 'no'">No</span>
+					<span ng-if="answer.data.data.main_switchStatus == 'na'">NA</span>
+				</div>
+				<div ng-if="answer.question.questionType=='Numeric'">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{answer.data.data.main_number}}
+				</div>
+				<div ng-if="answer.question.questionType=='Single'">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{answer.data.data.main_single.value}}
+				</div>
+				<div ng-if="answer.question.questionType=='Date'">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{moment(answer.data.data.main_date).format('MM/DD/YYYY')}}
+				</div>
+				<div ng-if="answer.question.questionType=='Text'">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{answer.data.data.main_text}}
+				</div>
+				<div ng-if="answer.data.action.action == 'action_email'">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Conditional Action: <span class="color-red">Notify supervisor</span>
+				</div>
+				<div ng-if="answer.data.action.action == 'action_sub'">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Conditional Action: <span class="color-red">Go to sub-question</span>
+				</div>
+				<div ng-if="answer.data.action.action == 'action_custom'">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Conditional Action: <span class="color-red">Display custom text</span>
+				</div>
+				<div ng-if="answer.data.action.action == 'action_no'">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Conditional Action: <span class="color-red">Take no action</span>
+				</div>
+				<div ng-if="answer.data.action.action == 'action_custom'">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Custom Text: {{answer.data.action.customText}}<br>
+				</div>
+				<div ng-if="answer.data.action.action == 'action_sub' && !answer.data.subAction">
+					<BLOCKQUOTE>
+						{{answer.question.subQuestions[0].text}}<br>
+					</BLOCKQUOTE>
+				</div>
+				<div ng-if="answer.data.action.action == 'action_sub' && answer.data.subAction">
+					<BLOCKQUOTE>
+						{{answer.question.subQuestions[0].text}}<br>
+						<span ng-if="answer.question.subQuestions[0].type == 'Yes/No' && answer.data.data.sub_switchStatus == 'yes'">YES</span>
+						<span ng-if="answer.question.subQuestions[0].type == 'Yes/No' && answer.data.data.sub_switchStatus == 'no'">NO</span>
+						<span ng-if="answer.question.subQuestions[0].type == 'Yes/No' && answer.data.data.sub_switchStatus == ''"></span>
+						<span ng-if="answer.question.subQuestions[0].type == 'Yes/No/NA' && answer.data.data.sub_switchStatus == 'yes'">YES</span>
+						<span ng-if="answer.question.subQuestions[0].type == 'Yes/No/NA' && answer.data.data.sub_switchStatus == 'no'">NO</span>
+						<span ng-if="answer.question.subQuestions[0].type == 'Yes/No/NA' && answer.data.data.sub_switchStatus == 'na'">NA</span>
+						<span ng-if="answer.question.subQuestions[0].type == 'Yes/No/NA' && answer.data.data.sub_switchStatus == ''"></span>
+						<span ng-if="answer.question.subQuestions[0].type == 'Numeric'">{{answer.data.data.sub_number}}</span>
+						<span ng-if="answer.question.subQuestions[0].type == 'Single'">{{answer.data.data.sub_single.value}}</span>
+						<span ng-if="answer.question.subQuestions[0].type == 'Date'">{{moment(answer.data.data.sub_date).format('MM/DD/YYYY')}}</span>
+						<span ng-if="answer.question.subQuestions[0].type == 'Text'">{{answer.data.data.sub_text}}</span>
+
+						<div ng-if="answer.data.subAction.action == 'action_email'">
+							Conditional Action:	<span style="color: #FF0000;">Notify Supervisor</span><br>
+						</div>
+						<div ng-if="answer.data.subAction.action == 'action_no'">
+							Conditional Action:	<span style="color: #FF0000;">Take no action</span><br>
+						</div>
+						<div ng-if="answer.data.subAction.action == 'action_custom'">
+							Conditional Action:	<span style="color: #FF0000;">Display custom text</span><br>
+							Custom Text: {{answer.data.subAction.customText}}<br>
+						</div>
+					</BLOCKQUOTE>
+				</div>
+				<div ng-if="answer.question.isComment">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Comment: {{answer.data.data.comment}}
+				</div>
+				<div ng-if="answer.question.isPhoto">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Image: <br>
+					<div ng-repeat="picture in answer.data.data.pictureURL track by $index" ng-if="isArray(answer.data.data.pictureURL)">
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="pictures/{{picture}}" target="_blank"><img src="pictures/{{picture}}" width="150" /></a><br>
+					</div>
+					<div ng-if="!isArray(answer.data.data.pictureURL) && answer.data.data.pictureURL != ''">
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="pictures/{{answer.data.data.pictureURL}}" target="_blank"><img src="pictures/{{answer.data.data.pictureURL}}" width="150" /></a><br>
+					</div>
+				</div>
+				<div ng-if="answer.question.isGeoTag">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Geo-tag: <br>
+					<div ng-repeat="position in answer.data.data.position" ng-if="isArray(answer.data.data.position.length)">
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Latitude: {{position.latitude}}, Longitude: {{position.longitude}}<br>
+					</div>
+					<div ng-if="!isArray(answer.data.data.position) && answer.data.data.position != ''">
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Latitude: {{answer.data.data.position.latitude}}, Longitude: {{answer.data.data.position.longitude}}<br>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div style="margin-top: 30px"></div>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="footer-logo">
+			</div>
+		</div>
+	</div>
+	<br />
+</section>

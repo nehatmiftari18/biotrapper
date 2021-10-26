@@ -1,0 +1,339 @@
+<section data-ng-controller="ChecklistBuildController" data-ng-init="initialize()">
+	<ol class="breadcrumb">
+		<li><a href="/#!/checklists">Checklists</a></li>
+		<li class="active">{{breadcrumbLabel}}</li>
+	</ol>
+	<div class="well sm container">
+		<!--<div class="form-content">-->
+		<div class="row">
+			<div class="col-sm-6">
+				<div class="form-group" ng-if="isSuperAdmin">
+					<label><span class="text-danger">*</span> Company</label>
+					<select ng-model="data.company" class="form-control" style="max-width: 300px; margin-right: 100px;" ng-options="company as company.name for company in companies track by company._id" ng-change="filterByCompany()" ng-enter="saveChecklist()">
+						<option value="">Select Company</option>
+					</select>
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<div class="form-group pull-right">
+					<label>Last Edited
+						<em>{{lastUpdated.format('MM/DD/YYYY HH:mm a')}} EST</em>
+						{{editor}}
+					</label>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="form-group col-sm-8">
+				<label for="text">
+					<span class="text-danger">*</span> Checklist Name <em>Keep this short and easy to read.</em>
+				</label>
+				<input type="text" class="form-control" ng-model="values.checklistText" ng-enter="saveChecklist()">
+			</div>
+			<div class="form-group col-sm-4">
+				<label for="text">
+					Citation
+				</label>
+				<input type="text" class="form-control" ng-model="values.citation" ng-enter="saveChecklist()">
+			</div>
+		</div>
+		<div class="row">
+			<div class="form-group col-sm-8">
+				<label for="text">
+					Keyword(s)
+					<em>Separate with commas.</em>
+				</label>
+				<tags-input ng-model="values.keywords" add-on-paste="true" placeholder="Keyword(s)">
+					<auto-complete source="loadKeywordsTags($query)"></auto-complete>
+				</tags-input>
+				<!--<textarea class="form-control" ng-model="values.keywords"></textarea>-->
+			</div>
+			<div class="form-group col-sm-4">
+				<label for="text">
+					Note
+				</label>
+				<textarea class="form-control" ng-model="values.note"></textarea>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-4 form-group">
+				<label for="text">
+					<span class="text-danger">*</span> Site
+				</label>
+				<select ng-model='site' class="form-control" ng-options="site as site.name for site in sites track by site._id" ng-enter="saveChecklist()">
+					<option value="">Select Site</option>
+				</select>
+			</div>
+			<div class="col-sm-4 form-group">
+				<label for="text">
+					<span class="text-danger">*</span> Required Frequency
+				</label>
+				<select ng-model='frequency' class="form-control" ng-options="frequency as frequency.name for frequency in frequencies track by frequency._id" ng-enter="saveChecklist()">
+					<option value="">Select Frequency</option>
+				</select>
+			</div>
+		</div>
+		<div class="row inspector-supervisor-area">
+			<div class="col-sm-6">
+				<div class="form-group">
+					<label for="text">
+						Inspector(s)
+					</label>
+				</div>
+				<div class="form-group">
+					<label for="text" class="inspector-label">
+						Primary
+					</label>
+					<select ng-model='primary_inspector' class="form-control" ng-options="inspector as inspector.displayName for inspector in inspectors track by inspector._id" ng-change="updateNotifierList()">
+						<option value="">Select</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="text" class="inspector-label">
+						Secondary
+					</label>
+					<select ng-model='secondary_inspector' class="form-control" ng-options="inspector as inspector.displayName for inspector in inspectors track by inspector._id" ng-change="updateNotifierList()">
+						<option value="">Select</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="text" class="inspector-label">
+						Tertiary
+					</label>
+					<select ng-model='tertiary_inspector' class="form-control" ng-options="inspector as inspector.displayName for inspector in inspectors track by inspector._id" ng-change="updateNotifierList()">
+						<option value="">Select</option>
+					</select>
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<div class="form-group">
+					<label for="text">
+						Supervisor(s) - Notify of submissions
+					</label>
+				</div>
+				<div class="form-group">
+					<label for="text">
+						Primary
+					</label>
+					<label class="radio-inline">
+						<input type="radio" name="optPrimaryStatus" value="true" ng-model="is_primary_user" ng-change="updateNotifierList()">Select
+					</label>
+					<label class="radio-inline">
+						<input type="radio" name="optPrimaryStatus" value="false" ng-model="is_primary_user" ng-change="updateNotifierList()">Enter
+					</label>
+					<select ng-model='primary_supervisor' class="form-control" ng-options="supervisor as supervisor.displayName for supervisor in supervisors track by supervisor._id" ng-show="is_primary_user == 'true'" ng-change="updateNotifierList()">
+						<option value="">Select</option>
+					</select>
+					<input type="email" class="form-control" ng-show="is_primary_user == 'false'" ng-model="primary_supervisor_email" placeholder="someone@email.com" ng-blur="updateNotifierList()">
+				</div>
+				<div class="form-group">
+					<label for="text">
+						Secondary
+					</label>
+					<label class="radio-inline">
+						<input type="radio" name="optSecondaryStatus" value="true" ng-model="is_secondary_user" ng-change="updateNotifierList()">Select
+					</label>
+					<label class="radio-inline">
+						<input type="radio" name="optSecondaryStatus" value="false" ng-model="is_secondary_user" ng-change="updateNotifierList()">Enter
+					</label>
+					<select ng-model='secondary_supervisor' class="form-control" ng-options="supervisor as supervisor.displayName for supervisor in supervisors track by supervisor._id" ng-show="is_secondary_user == 'true'" ng-change="updateNotifierList()">
+						<option value="">Select</option>
+					</select>
+					<input type="email" class="form-control" ng-show="is_secondary_user == 'false'" ng-model="secondary_supervisor_email" placeholder="someone@email.com" ng-blur="updateNotifierList()">
+				</div>
+				<div class="form-group">
+					<label for="text">
+						Tertiary
+					</label>
+					<label class="radio-inline">
+						<input type="radio" name="optTertiaryStatus" value="true" ng-model="is_tertiary_user" ng-change="updateNotifierList()">Select
+					</label>
+					<label class="radio-inline">
+						<input type="radio" name="optTertiaryStatus" value="false" ng-model="is_tertiary_user" ng-change="updateNotifierList()">Enter
+					</label>
+					<select ng-model='tertiary_supervisor' class="form-control" ng-options="supervisor as supervisor.displayName for supervisor in supervisors track by supervisor._id" ng-show="is_tertiary_user == 'true'" ng-change="updateNotifierList()">
+						<option value="">Select</option>
+					</select>
+					<input type="email" class="form-control" ng-show="is_tertiary_user == 'false'" ng-model="tertiary_supervisor_email" placeholder="someone@email.com" ng-blur="updateNotifierList()">
+				</div>
+			</div>
+		</div>
+		<div class="row reminders-area">
+			<div class="col-md-12">
+				<div class="form-group">
+					<label>Reminders</label>
+				</div>
+			</div>
+			<div class="col-md-12" ng-repeat="reminder in reminders">
+				<div class="form-inline">
+					<div class="form-group col-md-4 no-padding">
+						<input type="text" class="form-control reminder-control" ng-model="reminder.number" maxlength="2" style="width: 50px;" numbers-only ng-disabled="reminder.beforeAfterOn=='On'">
+						<select class="form-control reminder-control duration-type-selector" ng-model="reminder.durationType" ng-disabled="reminder.beforeAfterOn=='On'">
+							<option>Day(s)</option>
+							<option>Week(s)</option>
+						</select>
+						<select class="form-control reminder-control before-after-on-selector" ng-model="reminder.beforeAfterOn" ng-change="updateReminderState(reminder)">
+							<option>Before</option>
+							<option>After</option>
+							<option>On</option>
+						</select>
+						<label class="reminder-control">Due Date</label>
+						<label class="reminder-control">Notify</label>
+					</div>
+					<div class="form-group col-md-8 no-padding">
+						<div ng-dropdown-multiselect options="notifiers_list" selected-model="reminder.notifiers" extra-settings="multiselectSettings" checkboxes="true" class="select-notifiers"></div>
+					</div>
+				</div>
+				<div class="form-group">
+					<a class="btn btn-link no-padding" ng-click="customizeReminderText(reminder)">Customize reminder text</a>
+					<textarea class="form-control" ng-model="reminder.customText" ng-show="reminder.hasCustomText"></textarea>
+				</div>
+			</div>
+
+		</div>
+		<div class="row form-group">
+			<div data-ng-show="error" class="text-danger col-sm-12">
+				<strong data-ng-bind="error"></strong>
+			</div>
+		</div>
+		<!-- <div class="form-group">
+			<button type="button" class="btn btn-success" ng-click="saveChecklist()">Save</button>
+			<button type="button" class="btn btn-link ml10" ng-click="resetChecklist()">Reset</button>
+		</div> -->
+		<br />
+		<legend>Questions on This Checklist</legend>
+		<div class="table-responsive">
+			<table class="no-border table">
+				<thead>
+					<tr>
+						<th>Order</th>
+						<th>Mandatory</th>
+						<th>Question Text</th>
+						<th>Question Type</th>
+						<th>Regulatory</th>
+						<th>&nbsp;</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="question in relatedQuestions">
+						<td>
+							<select class="form-control" ng-model="question.order" ng-change="orderQuestions($index)" label="{{question.question.text}}">
+								<option ng-repeat="q in relatedQuestions" ng-selected="question.order===q.order" ng-value="q.order">
+									{{q.order}}
+								</option>
+							</select>
+						</td>
+						<td>
+							<select class="form-control" ng-model="question.mandatory">
+								<option value="yes">Yes</option>
+								<option value="no">No</option>
+							</select>
+						</td>
+						<td>
+							<a ng-click="openQuestion(question.question)">{{question.question.text}}</a>
+						</td>
+						<td>{{typeString[question.question.questionType]}}</td>
+						<td>
+							<span ng-if="question.question.regulatory">{{getRegulatoryFrameworkString(question.question.regulatory_framework)}}</span>
+							<span ng-if="!question.question.regulatory">Non-regulatory</span>
+						</td>
+						<td>
+							<div ng-click="removeQuestion($index)">
+								<i class="glyphicon glyphicon-remove-circle icon-md"></i>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="form-group">
+			<a class="btn btn-primary" ng-click="toggleSearch()"><i class="glyphicon glyphicon-plus"></i> Add Question</a>
+		</div>
+		<div ng-if="showSearch" class="show-search">
+
+			<div class="form-group"><em>Please search for and select questions from the Question Bank to add to this checklist form.</em></div>
+			<div class="row" id="addQuestion">
+				<div class="form-group col-sm-4">
+					<label>Title</label>
+					<input type="text" ng-model="filterCondition.filter_title" class="form-control" ng-keypress="filterQuestionsByText($event)">
+				</div>
+				<!--<div class="form-group col-sm-3" ng-if="isSuperAdmin">
+					<label>Company</label>
+					<select ng-model='filterCondition.filter_company' class="form-control" ng-options="company as company.name for company in companies track by company._id" ng-change="filterQuestionsByCompany()">
+						<option value="">All</option>
+					</select>
+				</div>-->
+				<div class="form-group col-sm-4">
+					<label>Keyword</label>
+					<select ng-model='filterCondition.filter_keyword' class="form-control" ng-options="keyword for keyword in filterKeywords" ng-change="filterQuestions()">
+						<option value="">Show All</option>
+					</select>
+				</div>
+				<div class="form-group col-sm-4">
+					<label>Regulation</label>
+					<select ng-model='filterCondition.filter_regulatory' class="form-control" ng-options="regulatory as regulatory.name for regulatory in regulatories track by regulatory._id" ng-change="filterQuestions()">
+						<option value="">Show All</option>
+					</select>
+				</div>
+				<!--<div class="form-group col-sm-1">
+					<button type="button" class="btn btn-success" ng-click="filterQuestions()" style="margin-top: 17px;">Go</button>
+				</div>-->
+			</div>
+
+
+
+
+			<div class="section-questions" ng-if="filteredQuestions.length>0">
+				<div class="row">
+					<div class="col-md-6 col-lg-6 col-sm-6 col-xs-6">
+							<label class="txt-sm">
+								<input type="checkbox" class="pull-left" ng-model="checkAllQuestions" ng-change="selectAllQuestions(checkAllQuestions)"> Select All/Deselect All
+							</label>
+					</div>
+					<div class="col-md-6 col-lg-6 col-sm-6 col-xs-6">
+						 <div class="section-sort">
+			                <span class="btn btn-xs">Sort</span>
+			                <div class="btn-group" role="group">
+			                    <a class="btn btn-xs" ng-click="sortBy('updated')" ng-class="{'sort-current': orderCriterion=='updated'}">Last Edit</a>
+			                    <a class="btn btn-xs" ng-click="sortBy('text')" ng-class="{'sort-current': orderCriterion=='text'}">Alphabetical</a>
+			                    <a class="btn btn-xs" ng-click="sortBy('regulatory_framework.name')" ng-class="{'sort-current': orderCriterion=='regulatory_framework.name'}">Regulation</a>
+			                </div>
+			            </div>
+					</div>
+				</div>
+				<div ng-repeat="question in filteredQuestions | orderBy:orderCriterion:orderReverse" ng-class="{'row-even': $index%2==0, 'row-odd': $index%2==1}">
+
+					<div class="section-questions row">
+						
+						<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+							<input type="checkbox" class="pull-left" ng-model="question.isChecked">
+							<ul class="list-unstyled pull-left">
+								<li><a class="checklist-name" ng-click="openQuestion(question)">{{question.text}}</a></li>
+								<li>Keywords: {{question.keywords.join()}}</li>
+								<li>Used in Checklists: {{getChecklistString(question)}}</li>
+								<li><span>Used By: </span></li>
+							</ul>
+							<ul class="list-unstyled pull-right text-right">
+								<li>{{typeString[question.questionType]}}</li>
+								<li>Last edited: {{generateDate(question.updated)}}</li>
+								<li><span ng-if="question.regulatory">Regulatory - {{question.regulatory_framework.name}}</span><span ng-if="!question.regulatory">Non-regulatory</span>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<br />
+				<div id="bottom"></div>
+			</div>
+		</div>
+		<div class="form-group" ng-if="!showSearch">
+			<button type="button" class="btn btn-success" ng-click="saveChecklist()">Save</button>
+			<button type="button" class="btn btn-link ml10" ng-click="cancel()">Cancel</button>
+		</div>
+		<br />
+		<div class="form-group" ng-if="showSearch">
+			<button type="button" class="btn btn-success" ng-click="addQuestions()">Add Selected Questions</button>
+			<button type="button" class="btn btn-link ml10" ng-click="cancelSearch()">Cancel</button>
+		</div>
+	</div>
+</section>

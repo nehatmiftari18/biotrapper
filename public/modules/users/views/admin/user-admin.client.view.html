@@ -1,0 +1,58 @@
+<section data-ng-controller="UsersController" data-ng-init="find()">
+    <div class="container">
+        <div class="form-group">
+            <h3>Manage Users</h3>
+            <br />
+            <p>
+                Click on a User ID to view/edit the details of that user. Click on any column header to sort by that column.
+            </p>
+        </div>
+        <div class="form-group">
+            <button type="button" class="btn btn-success" ng-click="addNew()">Add User</button>
+			<button type="button" class="btn btn-danger" ng-click="deactivateUsers()">Deactivate User</button>
+			<div class="pull-right">
+				<input type="checkbox" ng-model="isHideInactivateUsers"> Hide Inactive Users
+			</div>
+        </div>
+        <div class="section-content">
+            <div class="table-responsive">
+                <table class="table table-striped" ng-if="authentication.user" st-table="users" st-safe-src="safeUsers">
+                    <thead>
+                        <tr>
+							<th></th>
+                            <th st-sort="username" ng-click="persistSort('username')" st-sort-default="sortColumn.username">Username</th>
+                            <th st-sort="company.name" ng-click="persistSort('company')" st-sort-default="sortColumn.company">Company</th>
+                            <th st-sort="lastName" ng-click="persistSort('lastName')" st-sort-default="sortColumn.lastName">Last Name</th>
+                            <th st-sort="firstName" ng-click="persistSort('firstName')" st-sort-default="sortColumn.firstName">First name</th>
+                            <th st-sort="role" ng-click="persistSort('role')" st-sort-default="sortColumn.role">Role</th>
+                            <th st-sort="email" ng-click="persistSort('email')" st-sort-default="sortColumn.email">Email Address</th>
+							<th st-sort="sortByStatus" ng-click="persistSort('status')" st-sort-default="sortColumn.status">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="user in users | matchInactivateStatus:isHideInactivateUsers">
+							<td width="10"><input class="pull-left" type="checkbox" ng-model="user.selected"></td>
+                            <td><a ng-click="editUser(user)">{{ user.username }}</a></td>
+                            <td>{{ user.company.name }}</td>
+                            <td>{{ user.lastName }}</td>
+                            <td>{{ user.firstName }}</td>
+                            <td>{{ user.role }}</td>
+                            <td>{{ user.email }}</td>
+							<td>{{user.status ? 'Active' : 'Inactive'}}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="9" class="text-center">
+                                <!-- <div st-pagination="" st-items-by-page="20" st-displayed-pages="7"></div> -->
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <!-- table-responsive -->
+        </div>
+        <!-- section-content -->
+    </div>
+    <!-- container -->
+</section>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+</head>
+<body>
+	<p>An inspector who reports to you has entered an inspection response in the BioTrapper application that requires notification to you. The response is below. </p>
+	<p></p>
+	<strong>Inspector</strong>: {{inspectorName}}<br>
+	<strong>Inspection Date</strong>: {{inspectionDate}} <br>
+	<strong>Data Submitted</strong>: {{submissionDate}}<br>
+	<strong>Checklist</strong>:
+	{% if item.regularity.length %}
+		{{checklist}} ({{frequency}})<br>
+	{% else %}
+		{{checklist}} (Non-regulatory)<br>
+	{% end %}
+	<p></p>
+	<strong>Question</strong>: {{question}} <br>
+	<strong>Answer</strong>: {{answer}}<br>
+	<strong>Conditional Action</strong>: {{action}}<br>
+	<strong>Detail</strong>: {{subQuestionText}}<br>
+	<strong>Sub-question Answer</strong>: {{subAnswer}}<br>
+	<strong>Detail</strong>: Email supervisor<br>
+	<strong>To</strong>: {{supervisorEmail}} {{dateString}}<br>
+	{% if pictureUrl.length %}
+		<strong>Image</strong>: <br>
+		<img src="{{pictureUrl}}" class="pdf_image" /> <br>
+	{% endif %}
+	{% if geo_info.length %}
+		<strong>Geo-tag</strong>: {{geo_info}}<br>
+	{% endif %}
+	<strong>Comment</strong>: {{comment}}<br>
+
+</body>
+</html>

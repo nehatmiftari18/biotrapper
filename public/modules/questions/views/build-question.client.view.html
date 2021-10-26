@@ -1,0 +1,333 @@
+<section data-ng-controller="BuildController" data-ng-init="initialize()">
+	<ol class="breadcrumb">
+		<li><a href="/#!/questions">Questions</a></li>
+		<li class="active">{{breadcrumbLabel}}</li>
+	</ol>
+	<div class="well sm container">
+		<div class="row">
+			<div class="col-sm-6 col-xs-6" ng-if="isSuperAdmin">
+				<label for="company">
+					<span class="text-danger">*</span> Company 
+					<span for="lastEdit">
+					{{editor}}
+					</span>
+				</label>
+				<select ng-model='data.company' class="form-control" style="max-width: 300px;" ng-options="company as company.name for company in companies track by company._id" ng-change="filterByCompany()" ng-enter="saveQuestion()">
+					<option value="">Select Company</option>
+				</select>
+			</div>
+			<div class="col-sm-6 col-xs-6">
+				<em>Last Edited: {{lastUpdated.format('MM/DD/YYYY HH:mm a')}} EST</em>
+			</div>
+		</div>
+		<br />
+		<div class="row">
+			<div class="form-group col-sm-12">
+				<label for="text">
+					<span class="text-danger">*</span> Question Text
+					<em>Keep this short and easy to read.</em>
+				</label>
+				<textarea class="question-textarea form-control" ng-model="questionText"></textarea>
+			</div>
+		</div>
+
+		<div class="well sm white">
+			<div class="row">
+				<div class="form-group col-sm-8">
+					<label for="question-type">
+						<span class="text-danger">*</span> Question Type
+					</label>
+					<div class="row">
+						<div class="col-md-4">
+							<select ng-model="questionType" ng-change="onTypeChanged()" class="form-control" ng-enter="saveQuestion()">
+								<option value="">Select</option>
+								<option value="Yes/No">Yes/No toggle</option>
+								<option value="Yes/No/NA">Yes/No/NA toggle</option>
+								<option value="Numeric">Numerical entry</option>
+								<option value="Single">Single select</option>
+								<option value="Date">Date picker</option>
+								<option value="Text">Text entry</option>
+							</select>
+						</div>
+						<div class="col-md-8">
+							<div class="form-inline">
+								<div class="form-group" ng-if="questionType==='Numeric'">
+									Unit of measure &nbsp;
+									<input type="text" class="form-control" ng-model="type_numeric.numericUnit" ng-enter="saveQuestion()">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-group" ng-if="questionType && questionType!=='Text'">
+				<label for="conditional-action">Conditional Actions</label>
+				<div class="table-responsive">
+					<table class="table no-border conditional-table">
+						<thead>
+							<tr>
+								<th colspan="4" style="text-align: left;">Condition</th>
+								<th>Action</th>
+								<th>&nbsp;</th>
+								<th>&nbsp;</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="action in actions track by $index">
+								<td>
+									If
+								</td>
+								<td>
+									{{action.params.text}}
+								</td>
+								<td>
+									<div ng-if="action.params.inputType==='text' || action.params.inputType==='number'">
+										<input type="{{action.params.inputType}}" class="form-control" ng-model="action.action.value" ng-enter="saveQuestion()">
+									</div>
+									<div ng-if="action.params.inputType==='date'">
+										<div class="form-inline">
+										<div class="input-group">
+											<input type="text" class="form-control input-datepicker" datepicker-popup="{{dateInputFormat}}" ng-model="action.action.value" is-open="opened[$index]" datepicker-options="dateOptions" close-text="Close" style="width: 150px;" ng-enter="saveQuestion()"/>
+											<button type="button" class="btn btn-default" ng-click="open($event, $index)">
+												<i class="glyphicon glyphicon-calendar"></i>
+											</button>
+										</div>
+										</div>
+									</div>
+								</td>
+								<td>
+									Then
+								</td>
+								<td>
+									<select class="form-control" ng-model="action.action.action" ng-enter="saveQuestion()">
+										<option value="">Select an action</option>
+										<option value="action_email">Notify supervisor</option>
+										<option value="action_sub">Go to sub-question</option>
+										<option value="action_custom">Display custom text</option>
+										<option value="action_no">Take no action</option>
+									</select>
+								</td>
+								<td>
+									<div ng-if="action.action.action=='action_custom'">
+										<input type="text" class="form-control" ng-model="action.action.customText" placeholder="Enter custom text here" ng-enter="saveQuestion()">
+									</div>
+								</td>
+								<td>
+									<div ng-if="questionType==='Single'">
+										<span ng-click="removeCondition(-1, $index)">
+										<i class="glyphicon glyphicon-remove-circle"></i>
+									</span>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+						<tfoot>
+							<tr ng-if="questionType==='Single'">
+								<td></td>
+								<td colspan="6">
+									<a class="btn btn-primary" href="javascript:void(0);" ng-click="addCondition(-1)"><i class="glyphicon glyphicon-plus"></i> Add a dropdown option</a>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="form-section" ng-repeat="question in subQuestions track by $index">
+			<legend for="conditional-action">Sub-question</legend>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>Question Text</label>
+						<textarea class="form-control" ng-model="question.text"></textarea>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<label for="question-type">
+						Question Type
+					</label>
+					<div class="row">
+						<div class="col-md-4">
+							<select ng-model="question.type" ng-change="onSubTypeChanged($index)" class="form-control" ng-enter="saveQuestion()">
+								<option value="">Select</option>
+								<option value="Yes/No">Yes/No toggle</option>
+								<option value="Yes/No/NA">Yes/No/NA toggle</option>
+								<option value="Numeric">Numerical entry</option>
+								<option value="Single">Single select</option>
+								<option value="Date">Date picker</option>
+								<option value="Text">Text entry</option>
+							</select>
+						</div>
+						<div class="form-inline">
+							<div class="form-group" ng-if="question.type==='Numeric'">
+								Unit of measure &nbsp;
+								<input type="text" class="form-control" ng-model="question.numericUnit" ng-enter="saveQuestion()">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<br>
+			<div class="form-group" ng-if="question.type && question.type!=='Text'">
+				<label for="conditional-action">Conditional Actions</label>
+				<div class="table-responsive">
+					<table class="table no-border subquestion-table">
+						<thead>
+							<tr>
+								<th colspan="4">Condition</th>
+								<th>Action</th>
+								<th>&nbsp;</th>
+								<th>&nbsp;</th>
+							</tr>
+						</thead>
+						<tr ng-repeat="action in question.actions track by $index">
+							<td>
+								If
+							</td>
+							<td>
+								{{action.params.text}}
+							</td>
+							<td>
+								<div ng-if="action.params.inputType==='text' || action.params.inputType==='number'">
+									<input type="{{action.params.inputType}}" class="form-control" ng-model="action.action.value" ng-enter="saveQuestion()">
+								</div>
+								<div ng-if="action.params.inputType==='date'" class="form-inline">
+									<div class="input-group">
+										<input type="text" class="form-control input-datepicker" datepicker-popup="{{dateInputFormat}}" ng-model="action.action.value" is-open="opened[100*($parent.$parent.$index+1)+$index]" datepicker-options="dateOptions" close-text="Close" style="width: 150px;" ng-enter="saveQuestion()"/>
+										<button type="button" class="btn btn-default" ng-click="open($event, 100*($parent.$parent.$index+1)+$index)">
+											<i class="glyphicon glyphicon-calendar"></i>
+										</button>
+									</div>
+								</div>
+							</td>
+							<td>
+								Then
+							</td>
+							<td>
+								<select class="form-control" ng-model="action.action.action" ng-enter="saveQuestion()">
+									<option value="">Select an action</option>
+									<option value="action_email">Notify supervisor</option>
+									<option value="action_custom">Display custom text</option>
+									<option value="action_no">Take no action</option>
+								</select>
+							</td>
+							<td>
+								<div ng-if="action.action.action=='action_custom'">
+									<input type="text" class="form-control" ng-model="action.action.customText" placeholder="Enter custom text here" ng-enter="saveQuestion()">
+								</div>
+							</td>
+							<td>
+								<div ng-if="question.type==='Single'" ng-click="removeCondition($parent.$parent.$index, $parent.$index)">
+									<i class="glyphicon glyphicon-remove-circle"></i>
+								</div>
+							</td>
+						</tr>
+						<tfoot>
+							<tr ng-if="question.type==='Single'">
+								<td></td>
+								<td colspan="6">
+									<a class="btn btn-default" href="javascript:void(0);" ng-click="addCondition($parent.$index)"><i class="glyphicon glyphicon-plus"></i> Add a dropdown option</a>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div class="well sm white">
+			<label>Comments, Geo-location & Media</label>
+			<div class="checkbox">
+				<label>
+					<input type="checkbox" ng-model="chk_comments" ng-enter="saveQuestion()"> Enable "Comments" text-entry field
+				</label>
+			</div>
+			<div class="checkbox">
+				<label>
+					<input type="checkbox" ng-model="chk_photo" ng-enter="saveQuestion()"> Enable photo attachment(s)
+				</label>
+			</div>
+			<div class="checkbox">
+				<label>
+					<input type="checkbox" ng-model="chk_geoTag" ng-enter="saveQuestion()"> Enable geo-tag
+				</label>
+			</div>
+			<!-- <div class="checkbox">
+				<label>
+					<input type="checkbox" ng-model="chk_media"> Enable audio/voice attachment
+				</label>
+			</div> -->
+		</div>
+
+		<div class="row">
+			<div class="col-sm-7">
+				<div class="well sm white">
+					<div class="form-group">
+						<label for="keywords">
+							Keyword(s)
+							<em>Separate with commas</em>
+						</label>
+						<tags-input ng-model="keywords" add-on-paste="true" placeholder="Keyword(s)">
+							<auto-complete source="loadKeywordsTags($query)"></auto-complete>
+						</tags-input>
+					</div>
+					<label>
+						<span class="text-danger">*</span> Regulatory
+					</label>
+					<div class="form-group">
+
+						<label class="radio-inline">
+							<input type="radio" name="optRegulatory" value="yes" ng-model="optRegulatory" ng-enter="saveQuestion()"> Yes
+						</label>
+						<!--<select ng-model='regulatory' class="ml10 form-control select-regulatory" ng-options="regulatory as regulatory.name for regulatory in regulatories track by regulatory._id" ng-disabled="optRegulatory=='no'">
+							<option value="">Select Regulatory Framework</option>
+						</select>-->
+						<div ng-dropdown-multiselect options="regulatories" selected-model="regulatory" extra-settings="multiselectSettings" checkboxes="true" class="select-regulatory" ng-dropdown-multiselect-disabled="optRegulatory=='no'"></div>
+						<label class="radio-inline ml40">
+							<input type="radio" name="optRegulatory" value="no" ng-model="optRegulatory" ng-enter="saveQuestion()"> No
+						</label>
+					</div>
+
+					<div class="row">
+						<div class="col-md-6">
+							<label for="citation" style="font-weight: normal;">Citation</label>
+							<input type="text" class="form-control" ng-model="citation" ng-enter="saveQuestion()"/>
+						</div>
+						<div class="col-md-6">
+							<label for="Note" style="font-weight: normal;">Note</label>
+							<textarea class="form-control" ng-model="note"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-5">
+				<div class="well sm white">
+					<p class="font-bold ft15">Used in Checklists</p>
+					<div class="alert alert-danger" role="alert">
+						If you make and save changes to this question here, it will be updated in every checklist that uses it.
+					</div>
+					<div class="checklists">
+						<div ng-if="checklists.length===0">N/A</div>
+						<div ng-repeat="checklist in checklists | unique: '_id'" ng-if="checklists.length">
+							<a ng-click="openChecklist(checklist)">{{checklist.name}}</a>
+						</div>
+					</div>
+					<p>
+						To remove a question from a specific checklist, go to that checklist and remove it from there. <em>If you delete the question here, it will be deleted from the Question Bank and every checklist that uses it.</em>
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div data-ng-show="error" class="text-danger col-sm-12">
+				<strong data-ng-bind="error"></strong>
+			</div>
+		</div>
+		<br>
+		<div>
+			<button type="button" class="btn btn-success" ng-click="saveQuestion()">Save</button>
+			<button type="button" class="btn btn-link ml10" ng-click="cancel()">Cancel</button>
+		</div>
+	</div>
+</section>

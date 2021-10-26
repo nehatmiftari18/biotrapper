@@ -1,0 +1,65 @@
+.form-content {
+	padding: 10px;
+}
+
+.bordered {
+	border: solid 1px #ccc;
+	margin-bottom: 15px;
+}
+
+.inspector-label {
+	padding-top: 4px;
+}
+
+.inspector-supervisor-area select,
+.inspector-supervisor-area input[type='email']{
+	max-width: 300px;
+}
+
+.inspector-supervisor-area,
+.reminders-area {
+	background-color: #fff;
+	padding: 10px;
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+}
+
+.reminders-area {
+	margin-top: 17px;
+}
+
+.no-padding {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
+.reminder-control {
+	margin-right: 16px !important;
+	display: inline-block !important;
+}
+
+.reminder-control.duration-type-selector {
+	width: 70px !important;
+}
+
+.reminder-control.before-after-on-selector {
+	width: 60px !important;
+}
+
+.select-notifiers {
+	width: 100%;
+}
+
+.select-notifiers .dropdown-multiselect {
+	width: 100%;
+}
+
+.select-notifiers .dropdown-multiselect .dropdown-toggle {
+	max-width: 100%;
+	min-width: 100%;
+	text-transform: none;
+}
+
+.select-notifiers .dropdown-multiselect .dropdown-menu {
+	width: 100%;
+}

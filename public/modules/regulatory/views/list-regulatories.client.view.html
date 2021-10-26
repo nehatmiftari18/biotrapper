@@ -1,0 +1,41 @@
+<section data-ng-controller="RegulatoriesController" data-ng-init="find()">
+	<div class="form-group">
+        <h3>Manage Regulatory Frameworks</h3><br>
+        <p>
+            These are all the options that will appear in the "Regulatory Frameworks" dropdown that appears when adding or editing questions. <span class="font-italic">Don't forget to add an option for your users to select when a question is non-regulatory. ("Non-regulatory" or "N/A" for example.) </span>
+        </p>
+        <br />
+        <p>
+            Click on a Regulatory Framework ID to view/edit the details of that entry. Click on any column header to sort by that column.
+        </p>
+    </div>
+    <div class="form-group">
+        <button type="button" class="btn btn-success" ng-click="create()">Add Regulatory Framework</button>
+		<div class="pull-right">
+			<input type="checkbox" ng-model="isHideInactivate"> Hide Inactive Regulatory Frameworks
+		</div>
+    </div>
+    <div class="section-content">
+        <div class="table-responsive">
+            <table class="table" ng-if="authentication.user" st-table="regulatories" st-safe-src="safeRegulatories">
+                <thead>
+                <tr>
+					<th st-sort="name" ng-click="persistSort('name')" st-sort-default="sortColumn.name">Regulatory Framework</th>
+                    <th st-sort="company.name" ng-click="persistSort('company')" st-sort-default="sortColumn.company">Company</th>
+                    <th st-sort="sortByStatus" ng-click="persistSort('status')" st-sort-default="sortColumn.status">Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="regulatory in regulatories | matchInactivateStatus:isHideInactivate">
+					<td><a ng-click="editRegulatory(regulatory)">{{ regulatory.name }}</a></td>
+                    <td>{{regulatory.company.name}}</td>
+                    <td>
+                        <span ng-if="regulatory.status==true">Active</span>
+                        <span ng-if="regulatory.status==false">Inactive</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div> <!-- table-responsive -->
+    </div> <!-- section-content -->
+</section>

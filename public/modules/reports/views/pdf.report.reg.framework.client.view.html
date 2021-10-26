@@ -1,0 +1,124 @@
+<section data-ng-controller="FrameworkPdfController" data-ng-init="initialize()">
+	<ol class="breadcrumb">
+		<li><a href="/#!/reports">Reports</a></li>
+		<li class="active">{{breadcrumbLabel}}</li>
+	</ol>
+	<div class="row">
+		<div class="col-md-12">
+			<h3>Regulatory Report <span class="report-run-date">({{currentDate}})</span></h3>
+			<p>Right click anywhere on this report and select "Print" to print this report or save as a PDF.</p>
+		</div>
+		<div class="col-md-12">
+			<ul class="list-unstyled">
+				<li>{{checklist.company.name}}</li>
+				<li>{{checklist.name}} - {{checklist.site.name}} ({{checklist.frequency.name}})</li>
+				<li>Inspector(s): 
+					<span ng-repeat="inspector in inspectors track by $index">
+						&nbsp;{{inspector.displayName}},
+					</span>
+				</li>
+				<li>Regulatory Framework: 
+					<span ng-repeat="framework in frameworks track by $index">
+						&nbsp;{{framework.name}},
+					</span>
+				</li>
+				<li>Inspection Dates: {{fromDate}} to {{toDate}}</li>
+				<li>Grouped By: Regulatory Framework</li>
+			</ul>
+		</div>
+		<!--<div class="col-md-8">
+			<div class="text-right">Report run {{currentDate}}</div>
+		</div>-->
+	</div>
+	<br />
+	<div class="row">
+		<div class="col-sm-12" ng-repeat="questionGroup in questionGroups track by $index">
+			<h4 ng-if="questionGroup[0].question.regulatory">{{getRegulatoryFrameworkString(questionGroup[0].question.regulatory_framework)}}</h4>
+			<h4 ng-if="!questionGroup[0].question.regulatory">Non-regulatory</h4>
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Question</th>
+						<th>Answer</th>
+						<th>Image</th>
+						<th>Geo-tag</th>
+						<th>Comment</th>
+					</tr>
+				</thead>
+				<tbody ng-repeat="question in questionGroup track by $index">
+					<tr>
+						<td colspan="5"><b>{{question.question.text}}</b></td>
+					</tr>
+					<tr ng-repeat="inspection in inspections track by $index" ng-init="inspectIndex = $index">
+						<td>{{inspection.editor.displayName}}
+							<ul class="list-unstyled indent">
+								<li>Inspection Date: {{moment(inspection.date).format('MM/DD/YYYY')}}</li>
+								<li>Data Submitted: {{moment(inspection.created).format('MM/DD/YYYY HH:mm a')}}</li>
+							</ul>
+						</td>
+						<td>	<!-- Answer -->
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].question.questionType=='Yes/No'">
+								<span ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.data.main_switchStatus=='yes'">Yes</span>
+								<span ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.data.main_switchStatus=='no'">No</span>
+							</div>
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].question.questionType=='Yes/No/NA'">
+								<span ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.data.main_switchStatus=='yes'">Yes</span>
+								<span ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.data.main_switchStatus=='no'">No</span>
+								<span ng-if="inspection.orderedAnswers[$parent.$parent.$index].data.data.main_switchStatus=='na'">NA</span>
+							</div>
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].question.questionType=='Numeric'">
+								{{inspection.orderedAnswers[$parent.$parent.$index].data.data.main_number}}
+							</div>
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].question.questionType=='Single'">
+								{{inspection.orderedAnswers[$parent.$parent.$index].data.data.main_single.value}}
+							</div>
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].question.questionType=='Date'">
+								{{moment(inspection.orderedAnswers[$parent.$parent.$index].data.data.main_date).format('MM/DD/YYYY')}}
+							</div>
+							<div ng-if="inspection.orderedAnswers[$parent.$parent.$index].question.questionType=='Text'">
+								{{inspection.orderedAnswers[$parent.$parent.$index].data.data.main_text}}
+							</div>
+						</td>
+						<td>
+							<a ng-repeat="picture in inspection.orderedAnswers[$parent.$parent.$index].data.data.pictureURL track by $index" ng-init="picIndex = $index" ng-click="gotoPicture(inspectIndex, $parent.$parent.$index, picIndex)" ng-if="!isString(inspection.orderedAnswers[$parent.$parent.$index].data.data.pictureURL)">
+								{{picture}}
+							</a>
+							<a ng-click="gotoPicture(inspectIndex, $parent.$parent.$index, 0)" ng-if="isString(inspection.orderedAnswers[$parent.$parent.$index].data.data.pictureURL)">
+								{{inspection.orderedAnswers[$parent.$parent.$index].data.data.pictureURL}}
+							</a>
+						</td>
+						<td>
+							{{generateLocationString(inspection.orderedAnswers[$parent.$parent.$index].data.data.position)}}
+						</td>
+						<td>
+							{{inspection.orderedAnswers[$parent.$parent.$index].data.data.comment}}
+						</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+				</tfoot>
+			</table>
+			<br />
+		</div>
+	</div>
+	<div class="row form-group">
+		<div class="col-sm-6 form-group" ng-repeat="picture in pictures">
+			<a>{{picture.url}}</a><br /><br />
+			<img ng-src="pictures/{{picture.url}}" class="pdf_image" id="picture_{{picture.inspection}}_{{picture.answer}}_{{picture.pictureIndex}}" />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="footer-logo">
+			</div>
+		</div>
+	</div>
+	<br />
+</section>
